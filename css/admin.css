@@ -1,0 +1,54 @@
+/* Tinda Ko Kabayan - Admin Dashboard Styles */
+body {
+    background-color: #F8F9FA !important;
+    font-family: 'Poppins', sans-serif;
+}
+
+.admin-sidebar {
+    background: #0B192C !important;
+    min-height: 100vh;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.admin-sidebar .nav-link.active {
+    background-color: #1E3E62 !important;
+    color: #FFFFFF !important;
+}
+
+.admin-mobile-top {
+    background-color: #0B192C !important;
+}
+
+.admin-card {
+    border-radius: 16px;
+    border: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    transition: transform 0.2s ease;
+}
+
+.admin-card:hover {
+    transform: translateY(-2px);
+}
+
+.table th {
+    font-weight: 600;
+    color: #475569;
+}
+
+.hover-light:hover {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    color: #FFFFFF !important;
+}
+
+/* Custom Notification Badges */
+.badge.bg-danger {
+    background-color: #CE1126 !important;
+    font-size: 0.7rem;
+    padding: 0.35em 0.65em;
+}
+
+.badge.bg-warning {
+    background-color: #FCD116 !important;
+    font-size: 0.7rem;
+    padding: 0.35em 0.65em;
+}

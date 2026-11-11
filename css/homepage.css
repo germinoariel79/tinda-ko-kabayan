@@ -1,0 +1,69 @@
+/* Tinda Ko Kabayan - Homepage Specific Styles */
+body {
+    background-color: #F8F9FA !important;
+}
+
+.hero-section {
+    background: linear-gradient(135deg, rgba(0, 56, 168, 0.95), rgba(206, 17, 38, 0.9)), url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1200&auto=format&fit=crop&q=80');
+    background-size: cover;
+    background-position: center;
+    border-bottom: 4px solid var(--ph-yellow);
+}
+
+.card {
+    border-radius: 16px;
+}
+
+.preview-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #FFFFFF;
+}
+
+.preview-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--ph-blue);
+    box-shadow: none;
+}
+
+/* Dagdag para sa Sharjah Area Datalist Input */
+input[list]::-webkit-calendar-picker-indicator {
+    display: block !important;
+    opacity: 0.6;
+    cursor: pointer;
+}
+
+.backdrop-blur {
+    backdrop-filter: blur(5px);
+}
+
+/* Auth Switcher Tabs */
+.auth-tabs .btn.active {
+    background-color: var(--ph-blue) !important;
+    color: #FFFFFF !important;
+}
+
+.auth-tabs .btn {
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+}
+
+/* Footer Styling with High Contrast */
+footer.bg-ph-dark {
+    background-color: #0F172A !important;
+    color: #FFFFFF !important;
+}
+
+footer a {
+    color: #E2E8F0 !important;
+    transition: color 0.2s ease;
+}
+
+footer a:hover {
+    color: var(--ph-yellow) !important;
+}

@@ -1,0 +1,336 @@
+/* Tinda Ko Kabayan - Fully Responsive & Professional Design */
+:root {
+    --ph-blue: #0038A8;
+    --ph-red: #CE1126;
+    --ph-yellow: #FCD116;
+    --ph-light: #F8F9FA;
+    --ph-dark: #1E293B;
+}
+
+html, body {
+    max-width: 100%;
+    overflow-x: hidden !important;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #F3F4F6;
+    color: var(--ph-dark);
+    padding-bottom: 0px !important;
+}
+
+/* Fixed Top Container para sa Navbar at Marquee Banner */
+.fixed-top-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1030;
+    background-color: var(--ph-blue);
+}
+
+/* Flexible Main Content Adjustment */
+body.has-fixed-header main {
+    padding-bottom: 70px; /* Ang 70px allowance na gusto mo sa ibaba */
+}
+
+.bg-ph-blue {
+    background-color: var(--ph-blue) !important;
+}
+
+.text-ph-blue {
+    color: var(--ph-blue) !important;
+}
+
+.text-ph-red {
+    color: var(--ph-red) !important;
+}
+
+.bg-ph-red {
+    background-color: var(--ph-red) !important;
+}
+
+/* Navbar */
+.ph-navbar {
+    background-color: var(--ph-blue);
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.brand-title {
+    font-family: 'Grandstander', cursive;
+    color: #FFFFFF;
+    font-size: 1.25rem;
+}
+
+.brand-subtitle {
+    color: var(--ph-yellow);
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.ph-sun {
+    color: var(--ph-yellow);
+    font-size: 1.5rem;
+}
+
+.nav-pills .nav-link {
+    color: #FFFFFF;
+    font-weight: 600;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.nav-pills .nav-link.active {
+    background-color: var(--ph-red) !important;
+    color: #FFFFFF !important;
+}
+
+/* Hero Banner & Marquee Animation */
+.hero-banner {
+    background: linear-gradient(135deg, var(--ph-red) 0%, #A00C1D 100%);
+    border-bottom: 3px solid var(--ph-yellow);
+    position: relative;
+    white-space: nowrap;
+    width: 100%;
+}
+
+.marquee-track {
+    display: flex;
+    overflow: hidden;
+    user-select: none;
+    width: 100%;
+}
+
+.marquee-content {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    min-width: 100%;
+    animation: scroll-left 18s linear infinite;
+}
+
+.hero-banner:hover .marquee-content {
+    animation-play-state: paused;
+}
+
+@keyframes scroll-left {
+    from {
+        transform: translateX(0%);
+    }
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+/* Buttons */
+.btn-ph-primary {
+    background-color: var(--ph-blue);
+    color: #FFFFFF;
+    border: none;
+}
+
+.btn-ph-primary:hover {
+    background-color: #002B82;
+    color: #FFFFFF;
+}
+
+.btn-outline-ph-primary {
+    border: 2px solid var(--ph-blue);
+    color: var(--ph-blue);
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.btn-outline-ph-primary.active, .btn-outline-ph-primary:hover {
+    background-color: var(--ph-blue);
+    color: #FFFFFF;
+}
+
+.btn-ph-red {
+    background-color: var(--ph-red);
+    border: none;
+}
+
+.btn-ph-red:hover {
+    background-color: #B00E20;
+}
+
+/* Food Card */
+.food-card {
+    border-radius: 14px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background: #FFFFFF;
+}
+
+.food-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.06) !important;
+}
+
+.food-card-img {
+    height: 140px;
+    object-fit: cover;
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+    width: 100%;
+}
+
+/* RESPONSIVE SOLD OUT / NOT AVAILABLE BADGE OVERLAY */
+.food-card .badge.bg-danger {
+    font-size: 0.7rem !important;
+    padding: 0.4rem 0.6rem !important;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    z-index: 5;
+    letter-spacing: 0.5px;
+}
+
+@media (min-width: 768px) {
+    .food-card .badge.bg-danger {
+        font-size: 0.85rem !important;
+        padding: 0.6rem 1rem !important;
+    }
+}
+
+.price-tag {
+    background-color: var(--ph-yellow);
+    color: #000000;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+}
+
+/* Horizontal Filter Bar Scrollbar Hide */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Mobile Sticky Bottom Navigation */
+.mobile-bottom-nav {
+    z-index: 1040;
+}
+
+.nav-item-btn {
+    padding: 2px 4px;
+    border: none;
+    color: #64748B !important;
+}
+
+.nav-item-btn i {
+    font-size: 1.2rem;
+}
+
+.nav-item-btn .small-text {
+    font-size: 0.65rem;
+    font-weight: 600;
+    display: block;
+}
+
+.nav-item-btn.active i, .nav-item-btn.active .small-text {
+    color: var(--ph-red) !important;
+}
+
+/* Cart Drawer */
+.cart-drawer {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 100%;
+    max-width: 380px;
+    height: 100vh;
+    background-color: #FFFFFF;
+    z-index: 1055;
+    display: flex;
+    flex-direction: column;
+    transition: right 0.3s ease-in-out;
+}
+
+.cart-drawer.open {
+    right: 0;
+}
+
+.cart-drawer-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1050;
+    display: none;
+}
+
+.cart-drawer-backdrop.show {
+    display: block;
+}
+
+/* Fully Responsive Modal Custom Tweaks */
+.modal-content {
+    border-radius: 20px !important;
+    border: none !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+}
+
+@media (max-width: 576px) {
+    .modal-dialog {
+        margin: 1rem;
+        max-width: calc(100% - 2rem);
+    }
+    
+    .modal-body {
+        padding: 1.25rem !important;
+    }
+}
+
+.max-w-500 {
+    max-width: 500px;
+}
+
+.max-w-600 {
+    max-width: 600px;
+}
+
+.max-w-700 {
+    max-width: 700px;
+}
+
+/* Media Queries para mas pinong tuning sa iba't ibang screen sizes */
+@media (min-width: 576px) {
+    .food-card-img {
+        height: 160px;
+    }
+    .brand-title {
+        font-size: 1.5rem;
+    }
+    .price-tag {
+        font-size: 0.9rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .food-card-img {
+        height: 180px;
+    }
+}
+
+@media (min-width: 992px) {
+    .food-card-img {
+        height: 190px;
+    }
+}
+
+/* Live Tracker sa loob ng Cart Drawer Sidebar */
+.sidebar-order-tracker {
+    background: linear-gradient(135deg, #0B192C 0%, #1E3E62 100%);
+    border-radius: 14px;
+    color: #ffffff;
+    border: 1px solid rgba(252, 209, 22, 0.3);
+}
