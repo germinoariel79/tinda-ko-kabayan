@@ -11,16 +11,31 @@ let logAnswer = 0;
 const API_BASE_URL = "https://tinda-ko-kabayan.onrender.com/api";
 
 let cart = [];
+let cachedProducts = []; // Pansamantalang imbakan para sa mga paninda galing sa server
 let lastKnownOrderStatus = "";
 let unreadOrderUpdates = 0;
 
-function getFoodItems() {
-    return JSON.parse(localStorage.getItem("tkk_custom_products")) || [];
+// Kumuha ng mga paninda direkta mula sa Render API
+async function loadFoodItems() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/products`);
+        const data = await response.json();
+        if (data.success) {
+            cachedProducts = data.products;
+            renderFoodGrid(cachedProducts);
+        }
+    } catch (err) {
+        console.error("Error loading products from server:", err);
+    }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+function getFoodItems() {
+    return cachedProducts;
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
     window.scrollTo(0, 0);
-    renderFoodGrid(getFoodItems());
+    await loadFoodItems(); // I-load ang mga paninda mula sa server pagbukas
     updateCartUI();
     checkUserOrderStatus();
     setInterval(checkUserOrderStatus, 4000);
@@ -301,7 +316,7 @@ function openFoodModal(id) {
     new bootstrap.Modal(document.getElementById('foodModal')).show();
 }
 
-function switchTab(tab) {
+async function switchTab(tab) {
     document.querySelectorAll(".nav-link").forEach(el => el.classList.remove("active"));
     document.querySelectorAll(".nav-item-btn").forEach(el => el.classList.remove("active"));
     document.querySelectorAll(".app-view").forEach(el => el.classList.add("d-none"));
@@ -310,7 +325,7 @@ function switchTab(tab) {
         document.getElementById("tab-menu")?.classList.add("active");
         document.getElementById("mob-tab-menu")?.classList.add("active");
         document.getElementById("view-menu")?.classList.remove("d-none");
-        renderFoodGrid(getFoodItems());
+        await loadFoodItems(); // I-refresh ang paninda mula sa server paglipat ng tab
     } else if(tab === 'book') {
         document.getElementById("tab-book")?.classList.add("active");
         document.getElementById("mob-tab-book")?.classList.add("active");
@@ -349,17 +364,34 @@ function openCartConfirmModal() {
     new bootstrap.Modal(document.getElementById('cartConfirmModal')).show();
 }
 
-function confirmAndSubmitCartOrder() {
+async function confirmAndSubmitCartOrder() {
     const savedUser = JSON.parse(localStorage.getItem("tkk_user") || "{}");
     const refCode = "TKK-2026-" + Math.floor(1000 + Math.random() * 9000);
     const total = cart.reduce((sum, item) => sum + (Number(item.price) * item.qty), 0);
+    const itemsSummary = cart.map(i => `${i.name} (${i.qty}x)`).join(', ');
     
-    const newOrder = {
+    const newOrderPayload = {
         customerName: savedUser.name || 'Walk-in Customer',
         phone: savedUser.phone || 'N/A',
         emirate: savedUser.emirate || 'Sharjah',
-        itemsSummary: cart.map(i => `${i.name} (${i.qty}x)`).join(', '),
-        total: total,
+        itemsSummary: itemsSummary,
+        total: total
+    };
+
+    // I-send ang order sa Render server API
+    try {
+        await fetch(`${API_BASE_URL}/orders`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newOrderPayload)
+        });
+    } catch(err) {
+        console.error("Error submitting order to server:", err);
+    }
+
+    // I-save din sa localStorage para sa local tracker ng customer
+    const localOrder = {
+        ...newOrderPayload,
         status: 'Pending Delivery',
         ref: refCode,
         date: new Date().toISOString(),
@@ -367,7 +399,7 @@ function confirmAndSubmitCartOrder() {
     };
 
     let orders = JSON.parse(localStorage.getItem("tkk_orders")) || [];
-    orders.unshift(newOrder);
+    orders.unshift(localOrder);
     localStorage.setItem("tkk_orders", JSON.stringify(orders));
 
     bootstrap.Modal.getInstance(document.getElementById('cartConfirmModal'))?.hide();
@@ -389,14 +421,30 @@ function openBookingConfirmModal(e) {
     new bootstrap.Modal(document.getElementById('bookingConfirmModal')).show();
 }
 
-function confirmAndSubmitBookingOrder() {
+async function confirmAndSubmitBookingOrder() {
     const refCode = "TKK-2026-" + Math.floor(1000 + Math.random() * 9000);
-    const newBookingOrder = {
+    const bookingDetails = `[BOOKING] ${document.getElementById("bookDetails").value} (Petsa: ${document.getElementById("bookDate").value} - ${document.getElementById("bookTime").value})`;
+    
+    const bookingPayload = {
         customerName: document.getElementById("bookName").value,
         phone: document.getElementById("bookPhone").value,
         emirate: document.getElementById("bookEmirate").value,
-        itemsSummary: `[BOOKING] ${document.getElementById("bookDetails").value} (Petsa: ${document.getElementById("bookDate").value} - ${document.getElementById("bookTime").value})`,
-        total: 0.00,
+        itemsSummary: bookingDetails,
+        total: 0.00
+    };
+
+    try {
+        await fetch(`${API_BASE_URL}/orders`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(bookingPayload)
+        });
+    } catch(err) {
+        console.error("Error submitting booking to server:", err);
+    }
+
+    const localBooking = {
+        ...bookingPayload,
         status: 'Pending Delivery',
         ref: refCode,
         date: new Date().toISOString(),
@@ -404,7 +452,7 @@ function confirmAndSubmitBookingOrder() {
     };
 
     let orders = JSON.parse(localStorage.getItem("tkk_orders")) || [];
-    orders.unshift(newBookingOrder);
+    orders.unshift(localBooking);
     localStorage.setItem("tkk_orders", JSON.stringify(orders));
 
     bootstrap.Modal.getInstance(document.getElementById('bookingConfirmModal'))?.hide();

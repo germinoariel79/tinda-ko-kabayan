@@ -10,21 +10,40 @@ app.use(cors());
 app.use(express.json());
 
 // ----------------------------------------------------
-// 1. ROOT ROUTE: Piliting isalubong ang homepage.html
+// 1. STATIC FILES & ROOT ROUTE
 // ----------------------------------------------------
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'homepage.html'));
 });
 
-// 2. STATIC FILES: I-serve ang assets pero i-restrict ang direktang index.html kung gusto ng stricter check
 app.use(express.static(__dirname));
 
-// IN-MEMORY DATABASE
+// IN-MEMORY DATABASES
 let usersDB = [];    
 let ordersDB = [];   
+let productsDB = [
+    {
+        id: 1,
+        name: "Sizzling Pork Sisig",
+        category: "lutong-bahay",
+        price: 35.00,
+        image: "https://images.unsplash.com/photo-1626509809489-3cb56ab3debc?w=500",
+        description: "Malutong at masarap na sisig na may sili at kalamansi.",
+        available: true
+    },
+    {
+        id: 2,
+        name: "Special Pancit Bilao",
+        category: "bilao",
+        price: 90.00,
+        image: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=500",
+        description: "Pansit bihon guisado sakto para sa salu-salo ng pamilya at barkada.",
+        available: true
+    }
+];
 
 // ==========================================
-// 3. AUTHENTICATION ENDPOINTS
+// 2. AUTHENTICATION ENDPOINTS
 // ==========================================
 
 app.post('/api/register', (req, res) => {
@@ -52,11 +71,7 @@ app.post('/api/register', (req, res) => {
     };
 
     usersDB.push(newUser);
-    return res.json({
-        success: true,
-        message: "Matagumpay ang iyong pag-register!",
-        user: newUser
-    });
+    return res.json({ success: true, message: "Matagumpay ang iyong pag-register!", user: newUser });
 });
 
 app.post('/api/login', (req, res) => {
@@ -70,36 +85,64 @@ app.post('/api/login', (req, res) => {
     const foundUser = usersDB.find(u => u.phone === cleanPhone);
 
     if (!foundUser) {
-        return res.status(404).json({
-            success: false,
-            message: "Wala pang account ang numerong ito. Mag-register muna, Kabayan!"
-        });
+        return res.status(404).json({ success: false, message: "Wala pang account ang numerong ito. Mag-register muna, Kabayan!" });
     }
 
     foundUser.isActive = true;
-    return res.json({
-        success: true,
-        message: "Welcome back, Kabayan!",
-        user: foundUser
-    });
+    return res.json({ success: true, message: "Welcome back, Kabayan!", user: foundUser });
 });
 
 app.post('/api/logout', (req, res) => {
     const { phone } = req.body;
-
     if (phone) {
         const cleanPhone = phone.replace(/\s/g, '');
         const foundUser = usersDB.find(u => u.phone === cleanPhone);
-        if (foundUser) {
-            foundUser.isActive = false; 
-        }
+        if (foundUser) foundUser.isActive = false; 
     }
-
     return res.json({ success: true, message: "Logged out successfully" });
 });
 
 // ==========================================
-// 4. ADMIN & ORDERS ENDPOINTS
+// 3. PRODUCTS / MENU API ENDPOINTS
+// ==========================================
+
+app.get('/api/products', (req, res) => {
+    res.json({ success: true, products: productsDB });
+});
+
+app.post('/api/admin/products', (req, res) => {
+    const { name, category, price, image, description } = req.body;
+    const newProduct = {
+        id: Date.now(),
+        name,
+        category,
+        price: parseFloat(price),
+        image,
+        description,
+        available: true
+    };
+    productsDB.push(newProduct);
+    res.json({ success: true, message: "Naidagdag na ang ulam sa menu!", product: newProduct });
+});
+
+app.put('/api/admin/products/:id/toggle', (req, res) => {
+    const productId = parseInt(req.params.id);
+    const prod = productsDB.find(p => p.id === productId);
+    if (prod) {
+        prod.available = !prod.available;
+        return res.json({ success: true, message: "Na-update ang status ng ulam!", product: prod });
+    }
+    res.status(404).json({ success: false, message: "Hindi nahanap ang paninda." });
+});
+
+app.delete('/api/admin/products/:id', (req, res) => {
+    const productId = parseInt(req.params.id);
+    productsDB = productsDB.filter(p => p.id !== productId);
+    res.json({ success: true, message: "Nabura na ang paninda." });
+});
+
+// ==========================================
+// 4. ORDERS & ADMIN ENDPOINTS
 // ==========================================
 
 app.get('/api/admin/users', (req, res) => {
@@ -112,7 +155,6 @@ app.get('/api/admin/orders', (req, res) => {
 
 app.post('/api/orders', (req, res) => {
     const { customerName, phone, emirate, itemsSummary, total } = req.body;
-
     const newOrder = {
         id: ordersDB.length + 1,
         customerName,
@@ -123,7 +165,6 @@ app.post('/api/orders', (req, res) => {
         status: "Pending Delivery",
         orderDate: new Date().toLocaleString("en-US", { timeZone: "Asia/Dubai" })
     };
-
     ordersDB.push(newOrder);
     res.json({ success: true, message: "Pumasok na ang order sa Admin!", order: newOrder });
 });
@@ -131,13 +172,11 @@ app.post('/api/orders', (req, res) => {
 app.put('/api/admin/orders/:id', (req, res) => {
     const orderId = parseInt(req.params.id);
     const { status } = req.body;
-
     const order = ordersDB.find(o => o.id === orderId);
     if (order) {
         order.status = status;
         return res.json({ success: true, message: "Na-update ang Order Status!", order });
     }
-
     res.status(404).json({ success: false, message: "Hindi nahanap ang order." });
 });
 
