@@ -1,7 +1,7 @@
 // Global variables para sa dynamic anti-spam captchas
 let regAnswer = 0;
 let logAnswer = 0;
-const API_BASE_URL = "http://localhost:3000/api";
+const API_BASE_URL = "https://tinda-ko-kabayan.onrender.com/api";
 
 // Pilitin ibalik sa pinakataas (top) ang page kapag nag-refresh o nag-load
 window.addEventListener("beforeunload", () => {
@@ -115,7 +115,7 @@ function switchAuthMode(mode) {
     }
 }
 
-// 1. REGISTRATION HANDLER (Na-update: Babalik sa Login pagka-register)
+// 1. REGISTRATION HANDLER
 async function handleRegister(e) {
     e.preventDefault();
     
@@ -146,14 +146,9 @@ async function handleRegister(e) {
         const data = await response.json();
 
         if (data.success) {
-            // Huwag munang i-save ang tkk_user para sa index.html, kundi i-reset at papasukin sa Login!
             showTkkModal("Rehistrado na Ka Na, Kabayan!", `Matagumpay ang pag-register mo, ${name}! Ngayon, mag-login gamit ang iyong WhatsApp number para makapasok sa store.`, true, () => {
                 document.getElementById("registerForm").reset();
-                
-                // I-switch pabalik sa Login form para kailangan niyang mag-log in
                 switchAuthMode('login');
-                
-                // Opsyonal: Ilagay na agad ang phone number niya sa login input para madali
                 const logPhoneEl = document.getElementById("logPhone");
                 if(logPhoneEl) logPhoneEl.value = phone;
             });
@@ -162,7 +157,7 @@ async function handleRegister(e) {
         }
     } catch (err) {
         console.error("Backend Error:", err);
-        showTkkModal("Connection Error", "Hindi makakonekta sa Server! Siguraduhing nakatakbo ang 'node server.js'.", false);
+        showTkkModal("Connection Error", "Hindi makakonekta sa Render Server!", false);
     }
 }
 
@@ -204,11 +199,11 @@ async function handleLogin(e) {
         }
     } catch (err) {
         console.error("Backend Error:", err);
-        showTkkModal("Connection Error", "Hindi makakonekta sa Server! Siguraduhing nakatakbo ang 'node server.js'.", false);
+        showTkkModal("Connection Error", "Hindi makakonekta sa Render Server!", false);
     }
 }
 
-// Function para kunin ang accurate/real-time count ng users mula sa Node.js backend API
+// Function para kunin ang accurate/real-time count ng users mula sa Render API
 async function fetchRegisteredUsersCount() {
     try {
         const response = await fetch(`${API_BASE_URL}/admin/users`);
@@ -217,11 +212,9 @@ async function fetchRegisteredUsersCount() {
         if (data.success) {
             const badge = document.getElementById("userCountBadge");
             if (badge) {
-                // Base community number (1420) + tunay na bilang ng nakarehistro sa Admin Database
                 const realUserCount = data.count || 0;
                 const totalCalculated = 1420 + realUserCount;
-
-                badge.innerText = totalCalculated.toLocaleString(); // Format para may koma (e.g. 1,425)
+                badge.innerText = totalCalculated.toLocaleString();
             }
         }
     } catch (err) {
