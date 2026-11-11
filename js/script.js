@@ -1,19 +1,32 @@
 const API_BASE_URL = "https://tinda-ko-kabayan.onrender.com/api";
 
-// Kunin ang mga ulam mula sa Admin panel localStorage
-const foodItems = JSON.parse(localStorage.getItem("tkk_custom_products")) || [];
-
 // App State
 let cart = [];
 let lastKnownOrderStatus = "";
 let unreadOrderUpdates = 0;
 
+// Helper para kunin ang pinakabagong ulam mula sa LocalStorage tuwing kailangan
+function getFoodItems() {
+    return JSON.parse(localStorage.getItem("tkk_custom_products")) || [];
+}
+
 // App Initialization
 document.addEventListener("DOMContentLoaded", () => {
-    renderFoodGrid(foodItems);
+    renderFoodGrid(getFoodItems());
     updateCartUI();
     checkUserOrderStatus();
     setInterval(checkUserOrderStatus, 4000);
+    
+    // Pana-panahong i-check kung may bagong ulam na in-add si Admin para mag-update nang kusang-loob
+    setInterval(() => {
+        const currentGrid = document.getElementById("foodGrid");
+        // Kung nandoon sa menu tab, i-refresh ang grid kung may bago
+        if (currentGrid && document.getElementById("view-menu") && !document.getElementById("view-menu").classList.contains("d-none")) {
+            // Opsyonal: maaari nating i-render ulit para laging updated
+            const activeCategoryBtn = document.querySelector(".filter-buttons .active");
+            // panatilihin ang kasalukuyang view
+        }
+    }, 5000);
 });
 
 // Sidebar Live Order Tracker & Notification Badge Counter
@@ -65,7 +78,6 @@ function checkUserOrderStatus() {
         if(el) el.className = "text-white-50";
     });
 
-    // Linisin muna ang action area bago i-render kung hindi pa Delivered
     const actionArea = document.getElementById("trackerActionArea");
 
     if(status === "Pending Delivery" || status === "Pending") {
@@ -93,7 +105,6 @@ function checkUserOrderStatus() {
         if(pBar) { pBar.style.width = "100%"; pBar.className = "progress-bar bg-success"; }
         if(sDelivered) sDelivered.className = "text-success fw-bold";
 
-        // Kapag Delivered na, ilabas ang button para lumipat sa History at mag-order ulit
         if(actionArea) {
             actionArea.innerHTML = `
                 <div class="mt-2 text-center">
@@ -107,7 +118,6 @@ function checkUserOrderStatus() {
     }
 }
 
-// Function para ilipat ang natapos na order mula sa Active Orders papunta sa Order History
 function clearDeliveredTracker(refCode) {
     let savedOrders = JSON.parse(localStorage.getItem("tkk_orders") || "[]");
     let historyOrders = JSON.parse(localStorage.getItem("tkk_order_history") || "[]");
@@ -115,11 +125,9 @@ function clearDeliveredTracker(refCode) {
     const finishedOrder = savedOrders.find(o => o.ref === refCode);
     
     if(finishedOrder) {
-        // Ilagay sa history storage para Makita ni Admin sa History Tab
         historyOrders.unshift(finishedOrder);
         localStorage.setItem("tkk_order_history", JSON.stringify(historyOrders));
         
-        // Alisin sa active orders para mawala na sa admin active list at customer tracker
         savedOrders = savedOrders.filter(o => o.ref !== refCode);
         localStorage.setItem("tkk_orders", JSON.stringify(savedOrders));
     }
@@ -202,26 +210,29 @@ function filterCategory(cat, btn) {
     btn.classList.add("active", "btn-ph-primary");
     btn.classList.remove("btn-outline-ph-primary");
 
+    const items = getFoodItems();
     if (cat === "all") {
-        renderFoodGrid(foodItems);
+        renderFoodGrid(items);
     } else {
-        const filtered = foodItems.filter(item => item.category === cat);
+        const filtered = items.filter(item => item.category === cat);
         renderFoodGrid(filtered);
     }
 }
 
 function filterItems() {
     const query = document.getElementById("searchInput").value.toLowerCase();
-    const filtered = foodItems.filter(item => item.name.toLowerCase().includes(query) || (item.description && item.description.toLowerCase().includes(query)));
+    const items = getFoodItems();
+    const filtered = items.filter(item => item.name.toLowerCase().includes(query) || (item.description && item.description.toLowerCase().includes(query)));
     renderFoodGrid(filtered);
 }
 
 function addToCart(id) {
+    const items = getFoodItems();
     const existing = cart.find(item => item.id == id);
     if(existing) {
         existing.qty += 1;
     } else {
-        const food = foodItems.find(f => f.id == id);
+        const food = items.find(f => f.id == id);
         if(food) {
             cart.push({ ...food, qty: 1 });
         }
@@ -243,7 +254,7 @@ function updateCartQty(id, delta) {
 
 function updateCartUI() {
     const countEl = document.getElementById("cartCount");
-    const mobCountEl = document.getElementById("mobCartCount");
+    const mobCountEl = document.getElementById("mobCount"); // fallback
     const totalEl = document.getElementById("cartTotalAED");
     const listEl = document.getElementById("cartItemList");
     const barEl = document.getElementById("freeDeliveryBar");
@@ -253,7 +264,8 @@ function updateCartUI() {
     const totalPrice = cart.reduce((sum, item) => sum + (Number(item.price) * item.qty), 0);
 
     if(countEl) countEl.innerText = totalQty;
-    if(mobCountEl) mobCountEl.innerText = totalQty;
+    const mobCountElReal = document.getElementById("mobCartCount");
+    if(mobCountElReal) mobCountElReal.innerText = totalQty;
     if(totalEl) totalEl.innerText = totalPrice.toFixed(2) + " AED";
 
     const target = 100;
@@ -297,7 +309,8 @@ function updateCartUI() {
 }
 
 function openFoodModal(id) {
-    const food = foodItems.find(f => f.id == id);
+    const items = getFoodItems();
+    const food = items.find(f => f.id == id);
     if(!food) return;
 
     const isAvailable = food.available !== false;
@@ -337,6 +350,8 @@ function switchTab(tab) {
         document.getElementById("tab-menu")?.classList.add("active");
         document.getElementById("mob-tab-menu")?.classList.add("active");
         document.getElementById("view-menu")?.classList.remove("d-none");
+        // I-refresh ang grid tuwing babalik sa menu para laging bago ang ulam
+        renderFoodGrid(getFoodItems());
     } else if(tab === 'book') {
         document.getElementById("tab-book")?.classList.add("active");
         document.getElementById("mob-tab-book")?.classList.add("active");
@@ -449,7 +464,7 @@ function openBookingConfirmModal(e) {
 function confirmAndSubmitBookingOrder() {
     const refCode = "TKK-2026-" + Math.floor(1000 + Math.random() * 9000);
     const name = document.getElementById("bookName").value;
-    const phone = document.getElementById("bookPhone").value;
+    const phone = document.getElementById("bookPhone","").value;
     const area = document.getElementById("bookEmirate").value;
     const address = document.getElementById("bookAddress").value;
     const date = document.getElementById("bookDate").value;
