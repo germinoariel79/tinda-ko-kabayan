@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="tl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Owner & Admin Dashboard | Tinda Ko Kabayan UAE</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Grandstander:wght@700;800&display=swap" rel="stylesheet">
+    <!-- Main & Admin CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="bg-light">
+
+    <!-- MOBILE NAVBAR HEADER -->
+    <nav class="navbar navbar-dark admin-mobile-top d-lg-none px-3 sticky-top shadow-sm">
+        <div class="container-fluid p-0">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+                <span class="text-warning"><i class="bi bi-sun-fill"></i></span>
+                <span class="fw-bold fs-6 text-white">Tinda Ko Kabayan Admin</span>
+            </a>
+            <button class="btn btn-outline-light btn-sm border-0 shadow-none position-relative" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminSidebar">
+                <i class="bi bi-list fs-4"></i>
+                <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle" id="mobGlobalNotifDot" style="display: none;"></span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container-fluid p-0">
+        <div class="row g-0 min-vh-100">
+            
+            <!-- DESKTOP SIDEBAR -->
+            <div class="col-lg-3 col-xl-2 admin-sidebar text-white p-4 d-none d-lg-flex flex-column justify-content-between shadow-sm">
+                <div>
+                    <!-- Brand Header -->
+                    <div class="d-flex align-items-center gap-2 mb-4 pb-3 border-bottom border-light border-opacity-10">
+                        <span class="text-warning fs-4"><i class="bi bi-sun-fill"></i></span>
+                        <div>
+                            <h5 class="fw-bold brand-title mb-0 text-white fs-6">Tinda Ko Kabayan</h5>
+                            <small class="text-white-50" style="font-size: 0.7rem;">Owner Control Panel</small>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar Menu Links -->
+                    <ul class="nav nav-pills flex-column gap-2" id="adminMenuNav">
+                        <li class="nav-item">
+                            <button class="nav-link w-100 text-start active fw-bold d-flex align-items-center gap-2 py-2 px-3 rounded-pill shadow-sm" onclick="switchAdminTab('dashboard', this)">
+                                <i class="bi bi-speedometer2"></i> Dashboard
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link w-100 text-start text-white-50 fw-semibold d-flex align-items-center justify-content-between py-2 px-3 rounded-pill hover-light" onclick="switchAdminTab('store-orders', this)">
+                                <span><i class="bi bi-bag-check me-2"></i> Order</span>
+                                <span class="badge bg-danger rounded-pill small" id="badgeCartOrders">0</span>
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link w-100 text-start text-white-50 fw-semibold d-flex align-items-center justify-content-between py-2 px-3 rounded-pill hover-light" onclick="switchAdminTab('bilao-bookings', this)">
+                                <span><i class="bi bi-calendar-event me-2"></i> Booking</span>
+                                <span class="badge bg-warning text-dark rounded-pill small" id="badgeBookings">0</span>
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link w-100 text-start text-white-50 fw-semibold d-flex align-items-center gap-2 py-2 px-3 rounded-pill hover-light" onclick="switchAdminTab('users', this)">
+                                <i class="bi bi-people"></i> Mga Costumer
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link w-100 text-start text-white-50 fw-semibold d-flex align-items-center gap-2 py-2 px-3 rounded-pill hover-light" onclick="switchAdminTab('products-menu', this)">
+                                <i class="bi bi-menu-button-wide"></i> Mga Paninda
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link w-100 text-start text-white-50 fw-semibold d-flex align-items-center justify-content-between py-2 px-3 rounded-pill hover-light" onclick="switchAdminTab('order-history', this)">
+                                <span><i class="bi bi-clock-history me-2"></i> History</span>
+                                <span class="badge bg-success rounded-pill small" id="badgeHistory">0</span>
+                            </button>
+                        </li>
+                        <li class="nav-item mt-2">
+                            <button class="nav-link w-100 text-start text-warning fw-semibold d-flex align-items-center gap-2 py-2 px-3 rounded-pill hover-light" onclick="openLogoutModal()">
+                                <i class="bi bi-box-arrow-right"></i> Lumabas
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="pt-3 border-top border-light border-opacity-10 mt-4">
+                    <small class="text-white-50 d-block" style="font-size: 0.75rem;">&copy; 2026 Tinda Ko Kabayan</small>
+                    <small class="text-warning fw-bold" style="font-size: 0.75rem;">UAE Operations 🇦🇪🇵🇭</small>
+                </div>
+            </div>
+
+            <!-- MOBILE OFFCANVAS SIDEBAR -->
+            <div class="offcanvas offcanvas-start admin-sidebar text-white p-4 d-lg-none" tabindex="-1" id="adminSidebar">
+                <div class="offcanvas-header px-0 pb-3 border-bottom border-light border-opacity-10">
+                    <h5 class="offcanvas-title fw-bold brand-title fs-6">Owner Control Panel</h5>
+                    <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="offcanvas"></button>
+                </div>
+                <div class="offcanvas-body px-0 d-flex flex-column justify-content-between">
+                    <ul class="nav nav-pills flex-column gap-2">
+                        <li class="nav-item">
+                            <button class="nav-link w-100 text-start active fw-bold d-flex align-items-center gap-2 py-2 px-3 rounded-pill" data-bs-dismiss="offcanvas" onclick="switchAdminTab('dashboard', this)">
+                                <i class="bi bi-speedometer2"></i> Dashboard
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link w-100 text-start text-white-50 fw-semibold d-flex align-items-center justify-content-between py-2 px-3 rounded-pill" data-bs-dismiss="offcanvas" onclick="switchAdminTab('store-orders', this)">
+                                <span><i class="bi bi-bag-check me-2"></i> Order</span>
+                                <span class="badge bg-danger rounded-pill" id="mobBadgeCartOrders">0</span>
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link w-100 text-start text-white-50 fw-semibold d-flex align-items-center justify-content-between py-2 px-3 rounded-pill" data-bs-dismiss="offcanvas" onclick="switchAdminTab('bilao-bookings', this)">
+                                <span><i class="bi bi-calendar-event me-2"></i> Booking</span>
+                                <span class="badge bg-warning text-dark rounded-pill" id="mobBadgeBookings">0</span>
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link w-100 text-start text-white-50 fw-semibold d-flex align-items-center gap-2 py-2 px-3 rounded-pill" data-bs-dismiss="offcanvas" onclick="switchAdminTab('users', this)">
+                                <i class="bi bi-people"></i> Mga Costumer
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link w-100 text-start text-white-50 fw-semibold d-flex align-items-center gap-2 py-2 px-3 rounded-pill" data-bs-dismiss="offcanvas" onclick="switchAdminTab('products-menu', this)">
+                                <i class="bi bi-menu-button-wide"></i> Mga Paninda
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link w-100 text-start text-white-50 fw-semibold d-flex align-items-center justify-content-between py-2 px-3 rounded-pill" data-bs-dismiss="offcanvas" onclick="switchAdminTab('order-history', this)">
+                                <span><i class="bi bi-clock-history me-2"></i> History</span>
+                                <span class="badge bg-success rounded-pill" id="mobBadgeHistory">0</span>
+                            </button>
+                        </li>
+                        <li class="nav-item mt-2">
+                            <button class="nav-link w-100 text-start text-warning fw-semibold d-flex align-items-center gap-2 py-2 px-3 rounded-pill" data-bs-dismiss="offcanvas" onclick="openLogoutModal()">
+                                <i class="bi bi-box-arrow-right"></i> Lumabas
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- MAIN CONTENT AREA -->
+            <div class="col-12 col-lg-9 col-xl-10 p-3 p-md-4 d-flex flex-column">
+                
+                <!-- Top Header Bar with Search & Quick Status -->
+                <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between bg-white p-3 px-4 rounded-4 shadow-sm mb-4 border-start border-4 border-ph-blue gap-3">
+                    <div>
+                        <h4 class="fw-bold text-ph-blue mb-0 fs-5" id="currentTabTitle">Dashboard Overview</h4>
+                        <small class="text-muted" id="currentTabSub">Subaybayan ang pangkalahatang status ng iyong tindahan.</small>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+                            <input type="text" id="adminSearchInput" onkeyup="filterAdminTables()" class="form-control border-start-0 shadow-none" placeholder="Hanapin sa listahan...">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEKSYON 1: DASHBOARD OVERVIEW -->
+                <div id="tabDashboardSection" class="admin-tab-content">
+                    <div class="row g-3">
+                        <div class="col-12 col-md-4">
+                            <div class="card admin-card p-3 bg-white border-start border-4 border-ph-blue">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <span class="text-muted small fw-bold text-uppercase">Rehistradong Customer</span>
+                                        <h3 class="fw-bold text-ph-blue mb-0" id="statTotalUsers">0</h3>
+                                    </div>
+                                    <div class="bg-primary bg-opacity-10 p-3 rounded-circle text-primary fs-4">
+                                        <i class="bi bi-people-fill"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <div class="card admin-card p-3 bg-white border-start border-4 border-warning">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <span class="text-muted small fw-bold text-uppercase">Kabuuang Transaksyon</span>
+                                        <h3 class="fw-bold text-warning-emphasis mb-0" id="statTotalOrders">0</h3>
+                                    </div>
+                                    <div class="bg-warning bg-opacity-10 p-3 rounded-circle text-warning fs-4">
+                                        <i class="bi bi-bag-check-fill"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <div class="card admin-card p-3 bg-white border-start border-4 border-success">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <span class="text-muted small fw-bold text-uppercase">Kabuuang Benta (AED)</span>
+                                        <h3 class="fw-bold text-success mb-0" id="statTotalSales">0.00 AED</h3>
+                                    </div>
+                                    <div class="bg-success bg-opacity-10 p-3 rounded-circle text-success fs-4">
+                                        <i class="bi bi-cash-stack"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEKSYON 2: STORE ORDERS ONLY -->
+                <div id="tabStoreOrdersSection" class="admin-tab-content d-none">
+                    <div class="card admin-card p-4 bg-white">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h5 class="fw-bold text-ph-blue mb-0 fs-6"><i class="bi bi-bag-check me-2 text-ph-red"></i> Daily Store Orders (Cart Checkout)</h5>
+                            <button class="btn btn-sm btn-outline-danger fw-bold rounded-pill px-3" onclick="clearOrdersData()">
+                                <i class="bi bi-trash me-1"></i> Linisin ang Orders
+                            </button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle small mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Ref Code & Customer</th>
+                                        <th>Mga Inorder na Ulam</th>
+                                        <th>Kabuuang Halaga</th>
+                                        <th>Status (Aksyon)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="storeOrdersTableBody">
+                                    <!-- Dynamic JS Output -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEKSYON 3: BILAO BOOKINGS ONLY -->
+                <div id="tabBilaoBookingsSection" class="admin-tab-content d-none">
+                    <div class="card admin-card p-4 bg-white">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h5 class="fw-bold text-ph-blue mb-0 fs-6"><i class="bi bi-calendar-event me-2 text-warning"></i> Party Bilao & Catering Bookings</h5>
+                            <button class="btn btn-sm btn-outline-danger fw-bold rounded-pill px-3" onclick="clearOrdersData()">
+                                <i class="bi bi-trash me-1"></i> Linisin ang Bookings
+                            </button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle small mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Ref Code & Customer</th>
+                                        <th>Detalye ng Booking / Handaan</th>
+                                        <th>Status (Aksyon)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bilaoBookingsTableBody">
+                                    <!-- Dynamic JS Output -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEKSYON 4: MGA CUSTOMER ONLY -->
+                <div id="tabUsersSection" class="admin-tab-content d-none">
+                    <div class="card admin-card p-4 bg-white">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h5 class="fw-bold text-ph-blue mb-0 fs-6"><i class="bi bi-person-lines-fill me-2 text-ph-red"></i> Mga Rehistradong Kabayan</h5>
+                            <button class="btn btn-sm btn-outline-danger fw-bold rounded-pill px-3" onclick="clearUsersData()">
+                                <i class="bi bi-trash me-1"></i> I-reset ang User
+                            </button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle small mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Pangalan</th>
+                                        <th>WhatsApp Mobile</th>
+                                        <th>Emirate</th>
+                                        <th>Aksyon</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersTableBody">
+                                    <!-- Dynamic JS Output -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEKSYON 5: MGA PANINDA / MENU MANAGEMENT -->
+                <div id="tabProductsMenuSection" class="admin-tab-content d-none">
+                    <div class="card admin-card p-4 bg-white">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h5 class="fw-bold text-ph-blue mb-0 fs-6"><i class="bi bi-menu-button-wide me-2 text-warning"></i> Pamahalaan ang mga Paninda at Status</h5>
+                            <button class="btn btn-sm btn-ph-primary fw-bold rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#addProductModal">
+                                <i class="bi bi-plus-circle me-1"></i> Magdagdag ng Ulam
+                            </button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle small mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Larawan at Pangalan</th>
+                                        <th>Kategorya</th>
+                                        <th>Presyo (AED)</th>
+                                        <th>Status</th>
+                                        <th>Aksyon</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminProductsTableBody">
+                                    <!-- Dynamic JS Output -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEKSYON 6: ORDER HISTORY & ARCHIVES -->
+                <div id="tabOrderHistorySection" class="admin-tab-content d-none">
+                    <div class="card admin-card p-4 bg-white">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h5 class="fw-bold text-ph-blue mb-0 fs-6"><i class="bi bi-clock-history me-2 text-success"></i> Natapos at Nai-deliver na mga Order (History)</h5>
+                            <button class="btn btn-sm btn-outline-danger fw-bold rounded-pill px-3" onclick="clearHistoryData()">
+                                <i class="bi bi-trash me-1"></i> Linisin ang History
+                            </button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle small mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Ref Code & Customer</th>
+                                        <th>Mga Inorder na Ulam</th>
+                                        <th>Kabuuang Halaga</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="orderHistoryTableBody">
+                                    <!-- Dynamic JS Output -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: MAGDAGDAG NG BAGONG ULAM -->
+    <div class="modal fade" id="addProductModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow-lg">
+                <div class="modal-header bg-ph-dark text-white rounded-top-4">
+                    <h5 class="modal-title fw-bold fs-6"><i class="bi bi-plus-circle text-warning me-2"></i> Magdagdag ng Bagong Paninda</h5>
+                    <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="addProductForm" onsubmit="handleAddNewProduct(event)">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-secondary">Pangalan ng Ulam / Item *</label>
+                            <input type="text" id="prodName" class="form-control shadow-none" placeholder="Halimbawa: Sizzling Pork Sisig" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-secondary">Kategorya *</label>
+                            <select id="prodCategory" class="form-select shadow-none" required>
+                                <option value="lutong-bahay">Lutong Bahay / Ulam Special</option>
+                                <option value="bilao">Party Bilao</option>
+                                <option value="merienda">Merienda & Dessert</option>
+                                <option value="palamig">Palamig & Frozen</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-secondary">Presyo sa UAE Dirhams (AED) *</label>
+                            <input type="number" step="0.01" id="prodPrice" class="form-control shadow-none" placeholder="25.00" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-secondary">Pumili ng Larawan (Image File) *</label>
+                            <input type="file" id="prodImageFile" class="form-control shadow-none" accept="image/*" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-secondary">Deskripsyon ng Pagkain *</label>
+                            <textarea id="prodDesc" class="form-control shadow-none" rows="2" placeholder="Ilarawan ang ulam, lasa, o kung para sa ilang tao..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-ph-red text-white fw-bold w-100 rounded-pill py-2 shadow-sm">
+                            <i class="bi bi-check-circle me-1"></i> Isama sa Storefront Menu
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: DELETE PRODUCT CONFIRMATION -->
+    <div class="modal fade" id="deleteProductModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm mx-auto">
+            <div class="modal-content border-0 shadow-lg rounded-4 text-center p-3">
+                <div class="modal-body">
+                    <div class="text-danger mb-2"><i class="bi bi-trash-fill display-4"></i></div>
+                    <h5 class="fw-bold text-dark mb-2">Burahin ang Paninda?</h5>
+                    <p class="text-muted small mb-3">Sigurado ka bang gusto mong tuluyang alisin ang ulam na ito sa menu?</p>
+                    <input type="hidden" id="deleteTargetId">
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-light w-50 rounded-pill fw-bold py-2 shadow-sm" data-bs-dismiss="modal">Huwag</button>
+                        <button type="button" class="btn btn-danger w-50 rounded-pill fw-bold py-2 shadow-sm text-white" onclick="confirmDeleteProduct()">Oo, Burahin</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: TOGGLE STATUS CONFIRMATION -->
+    <div class="modal fade" id="toggleStatusModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm mx-auto">
+            <div class="modal-content border-0 shadow-lg rounded-4 text-center p-3">
+                <div class="modal-body">
+                    <div class="text-warning mb-2"><i class="bi bi-exclamation-circle-fill display-4"></i></div>
+                    <h5 class="fw-bold text-dark mb-2">Palitan ang Status?</h5>
+                    <p class="text-muted small mb-3" id="toggleStatusModalMsg">Gusto mo bang baguhin ang availability ng ulam na ito?</p>
+                    <input type="hidden" id="toggleTargetId">
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-light w-50 rounded-pill fw-bold py-2 shadow-sm" data-bs-dismiss="modal">Huwag</button>
+                        <button type="button" class="btn btn-ph-primary w-50 rounded-pill fw-bold py-2 shadow-sm text-white" onclick="confirmToggleProductStatus()">Oo, Baguhin</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CLEAR ORDERS MODAL -->
+    <div class="modal fade" id="clearOrdersModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm mx-auto">
+            <div class="modal-content border-0 shadow-lg rounded-4 text-center p-3">
+                <div class="modal-body">
+                    <div class="text-danger mb-2"><i class="bi bi-trash-fill display-4"></i></div>
+                    <h5 class="fw-bold text-dark mb-2">Linisin ang Orders?</h5>
+                    <p class="text-muted small mb-3">Sigurado ka bang gusto mong burahin ang lahat ng pumasok na order at bookings?</p>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-light w-50 rounded-pill fw-bold py-2 shadow-sm" data-bs-dismiss="modal">Huwag</button>
+                        <button type="button" class="btn btn-danger w-50 rounded-pill fw-bold py-2 shadow-sm text-white" onclick="executeClearOrders()">Oo, Burahin</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CLEAR HISTORY MODAL -->
+    <div class="modal fade" id="clearHistoryModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm mx-auto">
+            <div class="modal-content border-0 shadow-lg rounded-4 text-center p-3">
+                <div class="modal-body">
+                    <div class="text-danger mb-2"><i class="bi bi-trash-fill display-4"></i></div>
+                    <h5 class="fw-bold text-dark mb-2">Linisin ang History?</h5>
+                    <p class="text-muted small mb-3">Sigurado ka bang gusto mong burahin ang lahat ng nakaraang transaction history?</p>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-light w-50 rounded-pill fw-bold py-2 shadow-sm" data-bs-dismiss="modal">Huwag</button>
+                        <button type="button" class="btn btn-danger w-50 rounded-pill fw-bold py-2 shadow-sm text-white" onclick="executeClearHistory()">Oo, Burahin</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CLEAR USERS MODAL -->
+    <div class="modal fade" id="clearUsersModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm mx-auto">
+            <div class="modal-content border-0 shadow-lg rounded-4 text-center p-3">
+                <div class="modal-body">
+                    <div class="text-danger mb-2"><i class="bi bi-person-x-fill display-4"></i></div>
+                    <h5 class="fw-bold text-dark mb-2">I-reset ang User?</h5>
+                    <p class="text-muted small mb-3">Gusto mo bang tanggalin ang rehistradong customer sa direktoryo?</p>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-light w-50 rounded-pill fw-bold py-2 shadow-sm" data-bs-dismiss="modal">Huwag</button>
+                        <button type="button" class="btn btn-danger w-50 rounded-pill fw-bold py-2 shadow-sm text-white" onclick="executeClearUsers()">Oo, I-reset</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGOUT CONFIRMATION MODAL -->
+    <div class="modal fade" id="logoutConfirmModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm mx-auto">
+            <div class="modal-content border-0 shadow-lg rounded-4 text-center p-3">
+                <div class="modal-body">
+                    <div class="text-ph-red mb-2 text-danger"><i class="bi bi-box-arrow-right display-4"></i></div>
+                    <h5 class="fw-bold text-dark mb-2">Sigurado ka na ba?</h5>
+                    <p class="text-muted small mb-3">Gusto mo ba talagang lumabas sa admin panel, kabayan?</p>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-light w-50 rounded-pill fw-bold py-2 shadow-sm" data-bs-dismiss="modal">Huwag</button>
+                        <button type="button" class="btn btn-danger w-50 rounded-pill fw-bold py-2 shadow-sm text-white" onclick="confirmLogoutAdmin()">Oo, Lumabas</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADMIN SUCCESS MODAL -->
+    <div class="modal fade" id="adminSuccessModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm mx-auto">
+            <div class="modal-content border-0 shadow-lg rounded-4 text-center p-3">
+                <div class="modal-body">
+                    <div class="text-success mb-2"><i class="bi bi-check-circle-fill display-4"></i></div>
+                    <h5 class="fw-bold text-dark mb-2" id="adminSuccessTitle">Tagumpay!</h5>
+                    <p class="text-muted small mb-3" id="adminSuccessMsg">Na-update na ang sistema.</p>
+                    <button type="button" class="btn btn-ph-primary w-100 rounded-pill fw-bold py-2 shadow-sm" data-bs-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

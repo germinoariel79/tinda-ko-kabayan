@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="tl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tinda Ko Kabayan | Food & Bilao Express UAE</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Grandstander:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="has-fixed-header">
+
+    <!-- Fixed Top Container (Navbar + Marquee Banner) -->
+    <div class="fixed-top-container shadow-sm">
+        <header class="navbar navbar-expand-lg ph-navbar">
+            <div class="container-fluid px-3 px-md-4">
+                
+                <a class="navbar-brand d-flex align-items-center gap-2" href="#" onclick="switchTab('menu')">
+                    <span class="ph-sun"><i class="bi bi-sun-fill"></i></span>
+                    <div>
+                        <h1 class="brand-title mb-0">Tinda Ko Kabayan</h1>
+                        <small class="brand-subtitle" id="welcomeUserGreeting">Lasang Pinas sa UAE 🇦🇪🇵🇭</small>
+                    </div>
+                </a>
+
+                <!-- Cart button sa taas: Desktop View na may Order Notification Badge -->
+                <div class="d-none d-lg-flex align-items-center gap-2 ms-auto me-2 me-lg-0">
+                    <button class="btn btn-outline-light position-relative btn-cart px-3 rounded-pill shadow-none" onclick="toggleCartDrawer()" aria-label="Shopping Cart">
+                        <i class="bi bi-basket-fill fs-5"></i>
+                        <span class="cart-badge badge rounded-pill bg-warning text-dark ms-1" id="cartCount">0</span>
+                        <!-- Order Notification Badge Counter -->
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light" id="orderNotifBadge" style="display: none; font-size: 0.65rem;">0</span>
+                    </button>
+                </div>
+
+                <button class="navbar-toggler text-white border-0 d-lg-none shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu" aria-label="Toggle navigation">
+                    <i class="bi bi-list fs-2"></i>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navMenu">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 nav-pills align-items-lg-center gap-1 mt-2 mt-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="tab-menu" href="#" onclick="switchTab('menu')"><i class="bi bi-shop me-1"></i> Mag-Order</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="tab-book" href="#" onclick="switchTab('book')"><i class="bi bi-calendar-event me-1"></i> Mag-Book ng Bilao</a>
+                        </li>
+                        <li class="nav-item ms-lg-2">
+                            <button type="button" class="btn btn-outline-light btn-sm rounded-pill px-3 text-dark bg-warning fw-bold border-0 mt-2 mt-lg-0 shadow-sm" onclick="openLogoutModal()">
+                                <i class="bi bi-box-arrow-left me-1"></i> Lumabas
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+
+        <!-- Banner Bar -->
+        <div class="hero-banner text-white overflow-hidden py-2">
+            <div class="marquee-track">
+                <div class="marquee-content fw-bold">
+                    <span class="badge bg-warning text-dark px-3 py-1 fs-6 me-3"><i class="bi bi-truck me-1"></i> Direct Express Delivery sa buong Sharjah!</span>
+                    <span class="me-5"><i class="bi bi-shop text-light me-1"></i> Fast Direct-to-Admin Order System | Authentic Pinoy Taste! 🇦🇪🇵🇭</span>
+                    <span class="badge bg-warning text-dark px-3 py-1 fs-6 me-3"><i class="bi bi-truck me-1"></i> Direct Express Delivery sa buong Sharjah!</span>
+                    <span class="me-5"><i class="bi bi-shop text-light me-1"></i> Fast Direct-to-Admin Order System | Authentic Pinoy Taste! 🇦🇪🇵🇭</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN VIEW CONTAINER -->
+    <main class="container-fluid px-3 px-md-4 my-3 my-md-4">
+
+        <!-- VIEW 1: MENU / STOREFRONT -->
+        <div id="view-menu" class="app-view">
+            <div class="row g-3 align-items-center mb-4">
+                <div class="col-12 col-md-5 col-lg-4">
+                    <div class="input-group search-box shadow-sm rounded-pill overflow-hidden bg-white">
+                        <span class="input-group-text bg-white border-0 ps-3"><i class="bi bi-search text-muted"></i></span>
+                        <input type="text" id="searchInput" class="form-control border-0 py-2 shadow-none" placeholder="Maghanap ng ulam, bilao, halo-halo..." onkeyup="filterItems()">
+                    </div>
+                </div>
+                <div class="col-12 col-md-7 col-lg-8">
+                    <div class="d-flex gap-2 overflow-auto py-1 filter-buttons no-scrollbar">
+                        <button class="btn btn-ph-primary rounded-pill px-3 active text-nowrap" onclick="filterCategory('all', this)">Lahat</button>
+                        <button class="btn btn-outline-ph-primary rounded-pill px-3 text-nowrap" onclick="filterCategory('lutong-bahay', this)">Lutong Bahay</button>
+                        <button class="btn btn-outline-ph-primary rounded-pill px-3 text-nowrap" onclick="filterCategory('bilao', this)">Party Bilao</button>
+                        <button class="btn btn-outline-ph-primary rounded-pill px-3 text-nowrap" onclick="filterCategory('merienda', this)">Merienda & Desserts</button>
+                        <button class="btn btn-outline-ph-primary rounded-pill px-3 text-nowrap" onclick="filterCategory('palamig', this)">Palamig & Frozen</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Food Grid -->
+            <div class="row g-2 g-md-3 g-lg-4" id="foodGrid">
+                <!-- Dynamic Content via script.js -->
+            </div>
+        </div>
+
+        <!-- VIEW 2: BOOKING / APPOINTMENT FORM -->
+        <div id="view-book" class="app-view d-none">
+            <div class="card shadow border-0 rounded-4 overflow-hidden max-w-700 mx-auto mb-4">
+                <div class="card-header bg-ph-blue text-white p-3 p-md-4">
+                    <h4 class="mb-1 fw-bold fs-5 fs-md-4"><i class="bi bi-calendar-check me-2"></i> Mag-Book ng Catering / Bilao Order</h4>
+                    <p class="mb-0 text-white-50 small">Para sa mga Handaan, Birthday Party, Catering, o Custom Delivery Slots sa Sharjah</p>
+                </div>
+                <div class="card-body p-3 p-md-4">
+                    <form id="bookingForm" onsubmit="openBookingConfirmModal(event)">
+                        <div class="row g-3">
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-bold small">Pangalan (Full Name) *</label>
+                                <input type="text" id="bookName" class="form-control rounded-3 shadow-none" placeholder="Juan Dela Cruz" required>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-bold small">WhatsApp Mobile Number *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text rounded-start-3 bg-light">+971</span>
+                                    <input type="tel" id="bookPhone" class="form-control rounded-end-3 shadow-none" placeholder="501234567" maxlength="9" inputmode="numeric" required>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-bold small">Lugar / Area sa Sharjah *</label>
+                                <input type="text" id="bookEmirate" class="form-control rounded-3 shadow-none" placeholder="Hal. Al Nahda / Rolla / Al Majaz" required>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-bold small">Kumpletong Address / Building / Flat *</label>
+                                <input type="text" id="bookAddress" class="form-control rounded-3 shadow-none" placeholder="e.g. Building 12, Flat 302" required>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-bold small">Petsa ng Delivery *</label>
+                                <input type="date" id="bookDate" class="form-control rounded-3 shadow-none" required>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-bold small">Oras ng Delivery / Pickup *</label>
+                                <select id="bookTime" class="form-select rounded-3 shadow-none" required>
+                                    <option value="11:00 AM - 1:00 PM (Tanghalian)">11:00 AM - 1:00 PM (Tanghalian)</option>
+                                    <option value="2:00 PM - 5:00 PM (Merienda Slot)">2:00 PM - 5:00 PM (Merienda Slot)</option>
+                                    <option value="6:00 PM - 9:00 PM (Hapunan / Party)">6:00 PM - 9:00 PM (Hapunan / Party)</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-bold small">Detalye ng Order o Special Request *</label>
+                                <textarea id="bookDetails" class="form-control rounded-3 shadow-none" rows="3" placeholder="Halimbawa: 2 Bilao ng Spaghetti, 50 pcs Pork BBQ, at 1 Large Halo-Halo Tray" required></textarea>
+                            </div>
+                            <div class="col-12 text-end">
+                                <button type="submit" class="btn btn-ph-red btn-lg w-100 px-5 text-white fw-bold rounded-pill shadow-sm">
+                                    <i class="bi bi-check-circle-fill me-2"></i> Submit to Order
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- MOBILE STICKY BOTTOM NAVIGATION -->
+    <nav class="mobile-bottom-nav d-lg-none fixed-bottom bg-white border-top shadow-lg">
+        <div class="d-flex justify-content-around py-2">
+            <button class="btn btn-link text-dark nav-item-btn text-decoration-none active" id="mob-tab-menu" onclick="switchTab('menu')">
+                <i class="bi bi-shop fs-4 d-block"></i>
+                <span class="small-text">Menu</span>
+            </button>
+            <button class="btn btn-link text-dark nav-item-btn text-decoration-none" id="mob-tab-book" onclick="switchTab('book')">
+                <i class="bi bi-calendar-event fs-4 d-block"></i>
+                <span class="small-text">Book</span>
+            </button>
+            <button class="btn btn-link text-dark nav-item-btn text-decoration-none position-relative" onclick="toggleCartDrawer()">
+                <i class="bi bi-basket-fill fs-4 d-block text-ph-red"></i>
+                <span class="small-text">Cart</span>
+                <span class="badge rounded-pill bg-warning text-dark position-absolute top-0 start-50 translate-middle-x" id="mobCartCount">0</span>
+                <!-- Mobile Notification Badge Counter -->
+                <span class="position-absolute top-0 start-75 translate-middle badge rounded-pill bg-danger border border-light" id="mobOrderNotifBadge" style="display: none; font-size: 0.6rem;">0</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- SHOPPING CART SLIDE-OUT DRAWER / SIDEBAR -->
+    <div class="cart-drawer-backdrop" id="cartBackdrop" onclick="toggleCartDrawer()"></div>
+    <div class="cart-drawer shadow-lg" id="cartDrawer">
+        <div class="p-3 bg-ph-blue text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold fs-6"><i class="bi bi-basket-fill me-2"></i> Ang Cart at Order Mo</h5>
+            <button class="btn-close btn-close-white shadow-none" onclick="toggleCartDrawer()" aria-label="Close"></button>
+        </div>
+        
+        <!-- SIDEBAR LIVE ORDER TRACKER -->
+        <div id="userOrderTrackerCard" class="p-3 m-3 sidebar-order-tracker d-none">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-warning text-dark p-2 rounded-circle d-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
+                        <i class="bi bi-bicycle fs-6"></i>
+                    </span>
+                    <div>
+                        <h6 class="fw-bold mb-0 text-white fs-6" style="line-height: 1.1;">Live Order Status</h6>
+                        <small class="text-warning fw-semibold" id="trackRefCode" style="font-size: 0.65rem;">Ref: TKK-2026-XXXX</small>
+                    </div>
+                </div>
+                <span class="badge px-2 py-1 rounded-pill fw-bold shadow-sm" id="trackStatusBadge" style="font-size: 0.7rem;">🟡 Pending</span>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress rounded-pill mb-2 bg-white bg-opacity-25" style="height: 6px;">
+                <div class="progress-bar bg-warning progress-bar-striped progress-bar-animated" id="trackProgressBar" role="progressbar" style="width: 25%;"></div>
+            </div>
+
+            <div class="d-flex justify-content-between text-center text-white-50 fw-semibold" style="font-size: 0.6rem;">
+                <span id="stepPending" class="text-white">Pending</span>
+                <span id="stepCooking">Cooking</span>
+                <span id="stepDelivery">Delivery</span>
+                <span id="stepDelivered">Delivered</span>
+            </div>
+
+            <!-- Action Area para sa Delivered / Mag-order Ulit button -->
+            <div id="trackerActionArea"></div>
+        </div>
+
+        <div class="p-3 bg-light border-bottom">
+            <small class="fw-bold text-muted">Free Delivery Indicator (Sharjah):</small>
+            <div class="progress mt-1 rounded-pill" style="height: 8px;">
+                <div class="progress-bar bg-warning rounded-pill" id="freeDeliveryBar" role="progressbar" style="width: 0%;"></div>
+            </div>
+            <small class="text-muted small mt-1 d-block" id="freeDeliveryMsg">Magdagdag pa ng orders para sa libreng delivery!</small>
+        </div>
+
+        <div class="p-3 flex-grow-1 overflow-auto" id="cartItemList">
+            <!-- Dynamic Cart Items -->
+        </div>
+
+        <div class="p-3 bg-light border-top">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="fw-semibold small">Kabuuan (Total):</span>
+                <span class="fs-5 fw-bold text-ph-red" id="cartTotalAED">0.00 AED</span>
+            </div>
+            <button type="button" class="btn btn-success btn-lg w-100 fw-bold py-2 rounded-pill shadow-sm fs-6" onclick="openCartConfirmModal()">
+                <i class="bi bi-send-check-fill me-2"></i> Submit to Order
+            </button>
+        </div>
+    </div>
+
+    <!-- MODALS -->
+    <!-- 1. FOOD DETAIL MODAL -->
+    <div class="modal fade" id="foodModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable mx-3 mx-sm-auto">
+            <div class="modal-content border-0 shadow rounded-4 overflow-hidden">
+                <div class="modal-header bg-ph-blue text-white py-2">
+                    <h5 class="modal-title fw-bold fs-6" id="modalTitle">Food Title</h5>
+                    <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-3 p-md-4">
+                    <img id="modalImg" src="" class="img-fluid rounded-3 mb-3 w-100 object-fit-cover shadow-sm" style="height: 200px;" alt="Food Image">
+                    <p id="modalDesc" class="text-muted small"></p>
+                    <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+                        <span class="fs-5 fw-bold text-ph-red" id="modalPrice">0.00 AED</span>
+                        <button id="modalAddBtn" type="button" class="btn btn-ph-primary px-4 py-2 rounded-pill fw-bold shadow-sm text-nowrap">
+                            <i class="bi bi-cart-plus me-1"></i> Idagdag sa Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. CART ORDER CONFIRMATION MODAL -->
+    <div class="modal fade" id="cartConfirmModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered mx-3 mx-sm-auto">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="modal-header bg-ph-blue text-white py-3">
+                    <h5 class="modal-title fw-bold fs-6"><i class="bi bi-receipt-cutoff me-2 text-warning"></i> Kumpirmahin ang Order</h5>
+                    <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="text-center mb-3">
+                        <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-bold">Direct to Admin Dashboard</span>
+                    </div>
+                    <div class="bg-light p-3 rounded-3 mb-3">
+                        <h6 class="fw-bold border-bottom pb-2 mb-2 small text-uppercase text-secondary">Summary ng Orders:</h6>
+                        <div id="modalCartSummaryList" class="small mb-3"></div>
+                        <div class="d-flex justify-content-between border-top pt-2 fw-bold">
+                            <span>Kabuuan:</span>
+                            <span class="text-ph-red fs-6" id="modalCartTotal">0.00 AED</span>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-success btn-lg w-100 rounded-pill fw-bold shadow-sm fs-6" onclick="confirmAndSubmitCartOrder()">
+                        <i class="bi bi-send-check-fill me-2"></i> I-Confirm at I-Send sa Admin
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. BOOKING ORDER CONFIRMATION MODAL -->
+    <div class="modal fade" id="bookingConfirmModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered mx-3 mx-sm-auto">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="modal-header bg-ph-blue text-white py-3">
+                    <h5 class="modal-title fw-bold fs-6"><i class="bi bi-calendar-event me-2 text-warning"></i> Kumpirmahin ang Catering / Bilao Booking</h5>
+                    <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="bg-light p-3 rounded-3 mb-3 small">
+                        <div class="mb-2"><strong>Pangalan:</strong> <span id="modalBookName">-</span></div>
+                        <div class="mb-2"><strong>Mobile:</strong> <span id="modalBookPhone">-</span></div>
+                        <div class="mb-2"><strong>Area / Address:</strong> <span id="modalBookAddr">-</span></div>
+                        <div class="mb-2"><strong>Petsa at Oras:</strong> <span id="modalBookDateTime" class="text-ph-red fw-bold">-</span></div>
+                        <div class="mb-0"><strong>Mga In-order:</strong> <p class="mb-0 text-muted" id="modalBookDetails">-</p></div>
+                    </div>
+                    <button type="button" class="btn btn-ph-red btn-lg w-100 rounded-pill fw-bold text-white shadow-sm fs-6" onclick="confirmAndSubmitBookingOrder()">
+                        <i class="bi bi-send-check-fill me-2"></i> I-Confirm & Submit Booking
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. ORDER SUCCESS POPUP MODAL -->
+    <div class="modal fade" id="orderSuccessModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered mx-3 mx-sm-auto">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden text-center">
+                <div class="modal-body p-4 p-md-5">
+                    <div class="text-success mb-3">
+                        <i class="bi bi-check-circle-fill display-1"></i>
+                    </div>
+                    <h4 class="fw-bold text-ph-blue mb-2">Matagumpay na Naisumite!</h4>
+                    <p class="text-muted small mb-3">Naimbak na ang iyong order sa aming Admin Dashboard. Ihahanda na ng kusina ang iyong masarap na pagkain!</p>
+                    
+                    <div class="bg-light p-3 rounded-3 mb-4">
+                        <small class="text-muted d-block text-uppercase fw-bold">Reference Code:</small>
+                        <span class="fs-4 fw-bold text-ph-red" id="successRefCode">TKK-2026-0000</span>
+                    </div>
+
+                    <button type="button" class="btn btn-ph-primary px-5 py-2 rounded-pill fw-bold" data-bs-dismiss="modal">
+                        Salamat Kabayan!
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. WARNING ALERT MODAL -->
+    <div class="modal fade" id="alertModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm mx-auto">
+            <div class="modal-content border-0 shadow-lg rounded-4 text-center p-3">
+                <div class="modal-body">
+                    <div class="text-warning mb-2">
+                        <i class="bi bi-exclamation-circle-fill display-4"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2">Paalala</h5>
+                    <p class="text-muted small mb-3" id="alertModalMsg">Pumili muna ng pagkain bago mag-order!</p>
+                    <button type="button" class="btn btn-ph-primary w-100 rounded-pill fw-bold py-2 shadow-sm" data-bs-dismiss="modal">
+                        Sige, Pumili
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. LOGOUT CONFIRMATION MODAL -->
+    <div class="modal fade" id="logoutConfirmModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm mx-auto">
+            <div class="modal-content border-0 shadow-lg rounded-4 text-center p-3">
+                <div class="modal-body">
+                    <div class="text-ph-red mb-2 text-danger">
+                        <i class="bi bi-box-arrow-right display-4"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2">Sigurado ka na ba?</h5>
+                    <p class="text-muted small mb-3">Gusto mo ba talagang lumabas o bumalik sa welcome page, kabayan?</p>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-light w-50 rounded-pill fw-bold py-2 shadow-sm" data-bs-dismiss="modal">Huwag Muna</button>
+                        <button type="button" class="btn btn-danger w-50 rounded-pill fw-bold py-2 shadow-sm text-white" onclick="confirmLogout()">Oo, Lumabas</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- QUICK TOAST NOTIFICATION -->
+    <div class="toast-container position-fixed end-0 p-3" style="bottom: 75px; z-index: 1090;">
+        <div id="cartToast" class="toast align-items-center text-white bg-success border-0 rounded-3 shadow" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body fw-bold small" id="toastMsg">
+                    <i class="bi bi-check-circle-fill me-2"></i> Naidagdag na sa cart!
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto shadow-none" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/script.js"></script>
+    <script>
+        function adjustMainTopPadding() {
+            const fixedHeader = document.querySelector('.fixed-top-container');
+            const mainContent = document.querySelector('main');
+            if (fixedHeader && mainContent) {
+                const headerHeight = fixedHeader.offsetHeight;
+                mainContent.style.paddingTop = (headerHeight + 15) + 'px';
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            adjustMainTopPadding();
+            window.addEventListener('resize', adjustMainTopPadding);
+
+            const savedUser = localStorage.getItem("tkk_user");
+            if(savedUser) {
+                const user = JSON.parse(savedUser);
+                user.isActive = true;
+                localStorage.setItem("tkk_user", JSON.stringify(user));
+
+                const greeting = document.getElementById("welcomeUserGreeting");
+                if(greeting) greeting.innerText = `Mabuhay, ${user.name} (${user.emirate})! 🇦🇪`;
+                
+                const bookName = document.getElementById("bookName");
+                const bookPhone = document.getElementById("bookPhone");
+                const bookEmirate = document.getElementById("bookEmirate");
+                if(bookName) bookName.value = user.name;
+                if(bookPhone) bookPhone.value = user.phone;
+                if(bookEmirate) bookEmirate.value = user.emirate;
+            }
+        });
+    </script>
+</body>
+</html>
