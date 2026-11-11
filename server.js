@@ -1,25 +1,32 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
-// Gamitin ang Port na ibibigay ng Render, o 3000 kung nasa local computer ka pa
 const PORT = process.env.PORT || 3000;
 
 // Middlewares
 app.use(cors());
 app.use(express.json());
 
-// ... (ang iba pang code mo sa ibaba ay mananatili nang ganyan)
+// ----------------------------------------------------
+// SERVE STATIC FILES (Para ma-load ang HTML, CSS, at JS)
+// ----------------------------------------------------
+app.use(express.static(__dirname));
 
-// IN-MEMORY DATABASE (Pwedeng i-connect sa MongoDB / PostgreSQL sa hinaharap)
-let usersDB = [];    // Lalagyan ng mga rehistradong kabayan
-let ordersDB = [];   // Lalagyan ng mga pumasok na oda
+// IN-MEMORY DATABASE
+let usersDB = [];    
+let ordersDB = [];   
+
+// Root Route: Awtomatikong papasukin sa homepage.html
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'homepage.html'));
+});
 
 // ==========================================
-// 1. AUTHENTICATION ENDPOINTS (LOGIN / REGISTER / LOGOUT)
+// 1. AUTHENTICATION ENDPOINTS
 // ==========================================
 
-// API: Registration Endpoint
 app.post('/api/register', (req, res) => {
     const { name, phone, emirate } = req.body;
 
@@ -27,24 +34,20 @@ app.post('/api/register', (req, res) => {
         return res.status(400).json({ success: false, message: "Kailangan ang buong pangalan, phone, at emirate!" });
     }
 
-    // Linisin ang phone number (tanggalin ang spaces)
     const cleanPhone = phone.replace(/\s/g, '');
-
-    // Suriin kung may kaparehong number na sa Database
     const existingUser = usersDB.find(u => u.phone === cleanPhone);
+
     if (existingUser) {
-        // Kapag nag-try mag-register ulit, i-update na rin ang active status
         existingUser.isActive = true;
         return res.status(400).json({ success: false, message: "May account na ang WhatsApp number na ito! Mag-login na lamang." });
     }
 
-    // Gawa ng bagong User Profile (naka-set agad bilang active/online)
     const newUser = {
         id: usersDB.length + 1,
         name: name.trim(),
         phone: cleanPhone,
         emirate: emirate,
-        isActive: true, // Marker para sa Active (Online) status sa Admin
+        isActive: true,
         createdAt: new Date().toLocaleString("en-US", { timeZone: "Asia/Dubai" })
     };
 
@@ -58,7 +61,6 @@ app.post('/api/register', (req, res) => {
     });
 });
 
-// API: Login Endpoint (Para sa may account na)
 app.post('/api/login', (req, res) => {
     const { phone } = req.body;
 
@@ -67,8 +69,6 @@ app.post('/api/login', (req, res) => {
     }
 
     const cleanPhone = phone.replace(/\s/g, '');
-
-    // Hanapin sa User Database
     const foundUser = usersDB.find(u => u.phone === cleanPhone);
 
     if (!foundUser) {
@@ -78,7 +78,6 @@ app.post('/api/login', (req, res) => {
         });
     }
 
-    // I-set bilang Aktibo (Online) kapag nag-login
     foundUser.isActive = true;
     console.log("--> Matagumpay na Mag-login (Online) si:", foundUser.name);
 
@@ -89,7 +88,6 @@ app.post('/api/login', (req, res) => {
     });
 });
 
-// API: Logout Endpoint (Para maging Inactive sa Admin)
 app.post('/api/logout', (req, res) => {
     const { phone } = req.body;
 
@@ -97,7 +95,7 @@ app.post('/api/logout', (req, res) => {
         const cleanPhone = phone.replace(/\s/g, '');
         const foundUser = usersDB.find(u => u.phone === cleanPhone);
         if (foundUser) {
-            foundUser.isActive = false; // Mark bilang Inactive (Logged Out)
+            foundUser.isActive = false;
             console.log("--> Mag-logout (Offline) si:", foundUser.name);
         }
     }
@@ -106,20 +104,17 @@ app.post('/api/logout', (req, res) => {
 });
 
 // ==========================================
-// 2. ADMIN & ORDERS ENDPOINTS (PARA SA OWNER)
+// 2. ADMIN & ORDERS ENDPOINTS
 // ==========================================
 
-// API: Kunin ang lahat ng Rehistradong Users para sa Admin
 app.get('/api/admin/users', (req, res) => {
     res.json({ success: true, count: usersDB.length, users: usersDB });
 });
 
-// API: Kunin ang lahat ng Orders para sa Admin
 app.get('/api/admin/orders', (req, res) => {
     res.json({ success: true, count: ordersDB.length, orders: ordersDB });
 });
 
-// API: Magpasok ng Bagong Order galing sa Storefront (index.html)
 app.post('/api/orders', (req, res) => {
     const { customerName, phone, emirate, itemsSummary, total } = req.body;
 
@@ -140,7 +135,6 @@ app.post('/api/orders', (req, res) => {
     res.json({ success: true, message: "Pumasok na ang order sa Admin!", order: newOrder });
 });
 
-// API: Palitan ang Delivery Status ng Order (Admin Action)
 app.put('/api/admin/orders/:id', (req, res) => {
     const orderId = parseInt(req.params.id);
     const { status } = req.body;
@@ -155,10 +149,9 @@ app.put('/api/admin/orders/:id', (req, res) => {
     res.status(404).json({ success: false, message: "Hindi nahanap ang order." });
 });
 
-// Simulan ang Node.js Server
+// Simulan ang Server
 app.listen(PORT, () => {
     console.log(`=================================`);
-    console.log(`🚀 Tinda Ko Kabayan Backend Server is Running!`);
-    console.log(`📡 URL: http://localhost:${PORT}`);
+    console.log(`🚀 Tinda Ko Kabayan Server Running!`);
     console.log(`=================================`);
 });
