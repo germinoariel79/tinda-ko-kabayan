@@ -10,14 +10,17 @@ app.use(cors());
 app.use(express.json());
 
 // ----------------------------------------------------
-// 1. STATIC FILES: I-serve ang buong root folder para sa HTML, CSS, JS, at Images
+// 1. ROOT ROUTE: Pilitin munang isalubong ang homepage.html
 // ----------------------------------------------------
-app.use(express.static(__dirname));
-
-// ROOT ROUTE: Unang isalubong ang homepage.html
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'homepage.html'));
 });
+
+// 2. STATIC FILES: I-serve ang buong folder para sa assets, CSS, at JS
+app.use(express.static(__dirname));
+
+// Kung sakaling i-type nila nang direkta ang /index.html pero hindi pa naka-login, 
+// pwede rin nating lagyan ng fallback kung kinakailangan, pero itong root route ang pinakaunang i-load.
 
 // IN-MEMORY DATABASE (Taguan ng mga rehistradong kabayan at mga pumasok na order)
 let usersDB = [];    
