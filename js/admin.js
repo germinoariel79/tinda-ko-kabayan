@@ -7,7 +7,7 @@ let cachedProducts = [];
 document.addEventListener("DOMContentLoaded", () => {
     window.scrollTo(0, 0);
     loadAdminData();
-    setInterval(loadAdminData, 5000); // Auto-refresh bawat 5 segundo para sa real-time sync
+    setInterval(loadAdminData, 5000);
 });
 
 async function loadAdminData() {
@@ -53,9 +53,6 @@ function switchAdminTab(tabName, element) {
         document.getElementById("tabOrderHistorySection").classList.remove("d-none");
         titleEl.innerText = "Order History & Archives";
         subEl.innerText = "Tingnan ang talaan ng mga nakaraang transaksyon.";
-        
-        const bHist = document.getElementById("badgeHistory");
-        if(bHist) bHist.innerText = "0";
     }
 
     if (element) {
@@ -65,9 +62,6 @@ function switchAdminTab(tabName, element) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// ==========================================
-// USERS TABLE (Cloud Connected)
-// ==========================================
 async function loadUsersTable() {
     const tableBody = document.getElementById("usersTableBody");
     const statUsers = document.getElementById("statTotalUsers");
@@ -100,9 +94,6 @@ async function loadUsersTable() {
     }
 }
 
-// ==========================================
-// ORDERS & REVENUE TABLES (Cloud Connected)
-// ==========================================
 async function loadOrdersTables() {
     const storeTableBody = document.getElementById("storeOrdersTableBody");
     const bilaoTableBody = document.getElementById("bilaoBookingsTableBody");
@@ -232,9 +223,6 @@ async function loadOrderHistoryTable() {
     }
 }
 
-// ==========================================
-// PRODUCTS / MENU MANAGEMENT (Cloud Connected)
-// ==========================================
 async function loadAdminProductsTable() {
     const tableBody = document.getElementById("adminProductsTableBody");
     if(!tableBody) return;
@@ -314,41 +302,62 @@ async function confirmDeleteProduct() {
     } catch(err) { console.error("Error deleting product:", err); }
 }
 
-function handleAddNewProduct(e) {
+// INAYOS NA ADD PRODUCT FUNCTION (Safe Modal Closing & 100+ items ready)
+async function handleAddNewProduct(e) {
     e.preventDefault();
     const name = document.getElementById("prodName").value.trim();
     const category = document.getElementById("prodCategory").value;
     const price = parseFloat(document.getElementById("prodPrice").value);
-    const imageFile = document.getElementById("prodImageFile").files[0];
     const description = document.getElementById("prodDesc").value.trim();
+    const imageInput = document.getElementById("prodImageFile");
     
-    if (!imageFile) { alert("Pumili muna ng larawan!"); return; }
+    let imageUrl = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500";
 
-    const reader = new FileReader();
-    reader.onload = async function(uploadEvent) {
-        const newProductPayload = {
-            name, category, price,
-            image: uploadEvent.target.result,
-            description
+    if (imageInput.files && imageInput.files[0]) {
+        const file = imageInput.files[0];
+        const reader = new FileReader();
+        reader.onload = async function(uploadEvent) {
+            imageUrl = uploadEvent.target.result;
+            await submitProductToServer(name, category, price, imageUrl, description);
         };
-
-        try {
-            await fetch(`${API_BASE_URL}/admin/products`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(newProductPayload)
-            });
-            bootstrap.Modal.getInstance(document.getElementById('addProductModal'))?.hide();
-            document.getElementById("addProductForm").reset();
-            loadAdminProductsTable();
-        } catch(err) { console.error("Error adding product to server:", err); }
-    };
-    reader.readAsDataURL(imageFile);
+        reader.readAsDataURL(file);
+    } else {
+        await submitProductToServer(name, category, price, imageUrl, description);
+    }
 }
 
-// ==========================================
-// SEARCH & CLEAR HELPERS
-// ==========================================
+async function submitProductToServer(name, category, price, image, description) {
+    const newProductPayload = { name, category, price, image, description };
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/admin/products`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newProductPayload)
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+            document.getElementById("addProductForm").reset();
+            const modalEl = document.getElementById('addProductModal');
+            const modalInstance = bootstrap.Modal.getInstance(modalEl);
+            if (modalInstance) {
+                modalInstance.hide();
+            }
+            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            
+            loadAdminProductsTable();
+        } else {
+            alert("May problema sa pag-save: " + data.message);
+        }
+    } catch(err) {
+        console.error("Error adding product to server:", err);
+        alert("Hindi naka-konekta sa server.");
+    }
+}
+
 function filterAdminTables() {
     const searchInput = document.getElementById("adminSearchInput");
     if (!searchInput) return;
@@ -356,38 +365,6 @@ function filterAdminTables() {
     document.querySelectorAll(".searchable-row").forEach(row => {
         row.style.display = row.innerText.toLowerCase().includes(filter) ? "" : "none";
     });
-}
-
-function clearOrdersData() {
-    new bootstrap.Modal(document.getElementById('clearOrdersModal')).show();
-}
-
-function executeClearOrders() {
-    // Pwedeng linisin ang local orders o mag-add ng server reset kung kinakailangan
-    localStorage.removeItem("tkk_orders");
-    bootstrap.Modal.getInstance(document.getElementById('clearOrdersModal'))?.hide();
-    loadOrdersTables();
-}
-
-function clearHistoryData() {
-    new bootstrap.Modal(document.getElementById('clearHistoryModal')).show();
-}
-
-function executeClearHistory() {
-    localStorage.removeItem("tkk_order_history");
-    bootstrap.Modal.getInstance(document.getElementById('clearHistoryModal'))?.hide();
-    loadOrderHistoryTable();
-    loadOrdersTables();
-}
-
-function clearUsersData() {
-    new bootstrap.Modal(document.getElementById('clearUsersModal')).show();
-}
-
-function executeClearUsers() {
-    localStorage.removeItem("tkk_all_users");
-    bootstrap.Modal.getInstance(document.getElementById('clearUsersModal'))?.hide();
-    loadUsersTable();
 }
 
 function openLogoutModal() {

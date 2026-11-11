@@ -5,13 +5,12 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middlewares
+// Middlewares (Nakaset sa 50mb para kaya ang malalaking image upload o Base64)
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-// ----------------------------------------------------
-// 1. STATIC FILES & ROOT ROUTE
-// ----------------------------------------------------
+// ROOT ROUTE: Piliting isalubong ang homepage.html
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'homepage.html'));
 });
@@ -43,22 +42,19 @@ let productsDB = [
 ];
 
 // ==========================================
-// 2. AUTHENTICATION ENDPOINTS
+// AUTHENTICATION ENDPOINTS
 // ==========================================
-
 app.post('/api/register', (req, res) => {
     const { name, phone, emirate } = req.body;
-
     if (!name || !phone || !emirate) {
         return res.status(400).json({ success: false, message: "Kailangan ang buong pangalan, phone, at emirate!" });
     }
-
     const cleanPhone = phone.replace(/\s/g, '');
     const existingUser = usersDB.find(u => u.phone === cleanPhone);
 
     if (existingUser) {
         existingUser.isActive = true;
-        return res.status(400).json({ success: false, message: "May account na ang WhatsApp number na ito! Mag-login na lamang." });
+        return res.status(400).json({ success: false, message: "May account na ang WhatsApp number na ito!" });
     }
 
     const newUser = {
@@ -76,16 +72,14 @@ app.post('/api/register', (req, res) => {
 
 app.post('/api/login', (req, res) => {
     const { phone } = req.body;
-
     if (!phone) {
         return res.status(400).json({ success: false, message: "Pakilagay ang iyong WhatsApp number!" });
     }
-
     const cleanPhone = phone.replace(/\s/g, '');
     const foundUser = usersDB.find(u => u.phone === cleanPhone);
 
     if (!foundUser) {
-        return res.status(404).json({ success: false, message: "Wala pang account ang numerong ito. Mag-register muna, Kabayan!" });
+        return res.status(404).json({ success: false, message: "Wala pang account ang numerong ito." });
     }
 
     foundUser.isActive = true;
@@ -103,9 +97,8 @@ app.post('/api/logout', (req, res) => {
 });
 
 // ==========================================
-// 3. PRODUCTS / MENU API ENDPOINTS
+// PRODUCTS / MENU API ENDPOINTS
 // ==========================================
-
 app.get('/api/products', (req, res) => {
     res.json({ success: true, products: productsDB });
 });
@@ -142,9 +135,8 @@ app.delete('/api/admin/products/:id', (req, res) => {
 });
 
 // ==========================================
-// 4. ORDERS & ADMIN ENDPOINTS
+// ORDERS & ADMIN ENDPOINTS
 // ==========================================
-
 app.get('/api/admin/users', (req, res) => {
     res.json({ success: true, count: usersDB.length, users: usersDB });
 });

@@ -11,11 +11,10 @@ let logAnswer = 0;
 const API_BASE_URL = "https://tinda-ko-kabayan.onrender.com/api";
 
 let cart = [];
-let cachedProducts = []; // Pansamantalang imbakan para sa mga paninda galing sa server
+let cachedProducts = [];
 let lastKnownOrderStatus = "";
 let unreadOrderUpdates = 0;
 
-// Kumuha ng mga paninda direkta mula sa Render API
 async function loadFoodItems() {
     try {
         const response = await fetch(`${API_BASE_URL}/products`);
@@ -35,7 +34,7 @@ function getFoodItems() {
 
 document.addEventListener("DOMContentLoaded", async () => {
     window.scrollTo(0, 0);
-    await loadFoodItems(); // I-load ang mga paninda mula sa server pagbukas
+    await loadFoodItems();
     updateCartUI();
     checkUserOrderStatus();
     setInterval(checkUserOrderStatus, 4000);
@@ -325,7 +324,7 @@ async function switchTab(tab) {
         document.getElementById("tab-menu")?.classList.add("active");
         document.getElementById("mob-tab-menu")?.classList.add("active");
         document.getElementById("view-menu")?.classList.remove("d-none");
-        await loadFoodItems(); // I-refresh ang paninda mula sa server paglipat ng tab
+        await loadFoodItems();
     } else if(tab === 'book') {
         document.getElementById("tab-book")?.classList.add("active");
         document.getElementById("mob-tab-book")?.classList.add("active");
@@ -378,7 +377,6 @@ async function confirmAndSubmitCartOrder() {
         total: total
     };
 
-    // I-send ang order sa Render server API
     try {
         await fetch(`${API_BASE_URL}/orders`, {
             method: "POST",
@@ -389,7 +387,6 @@ async function confirmAndSubmitCartOrder() {
         console.error("Error submitting order to server:", err);
     }
 
-    // I-save din sa localStorage para sa local tracker ng customer
     const localOrder = {
         ...newOrderPayload,
         status: 'Pending Delivery',
