@@ -10,24 +10,21 @@ app.use(cors());
 app.use(express.json());
 
 // ----------------------------------------------------
-// 1. ROOT ROUTE: Pilitin munang isalubong ang homepage.html
+// 1. ROOT ROUTE: Piliting isalubong ang homepage.html
 // ----------------------------------------------------
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'homepage.html'));
 });
 
-// 2. STATIC FILES: I-serve ang buong folder para sa assets, CSS, at JS
+// 2. STATIC FILES: I-serve ang assets pero i-restrict ang direktang index.html kung gusto ng stricter check
 app.use(express.static(__dirname));
 
-// Kung sakaling i-type nila nang direkta ang /index.html pero hindi pa naka-login, 
-// pwede rin nating lagyan ng fallback kung kinakailangan, pero itong root route ang pinakaunang i-load.
-
-// IN-MEMORY DATABASE (Taguan ng mga rehistradong kabayan at mga pumasok na order)
+// IN-MEMORY DATABASE
 let usersDB = [];    
 let ordersDB = [];   
 
 // ==========================================
-// 2. AUTHENTICATION ENDPOINTS (LOGIN / REGISTER / LOGOUT)
+// 3. AUTHENTICATION ENDPOINTS
 // ==========================================
 
 app.post('/api/register', (req, res) => {
@@ -102,7 +99,7 @@ app.post('/api/logout', (req, res) => {
 });
 
 // ==========================================
-// 3. ADMIN & ORDERS ENDPOINTS
+// 4. ADMIN & ORDERS ENDPOINTS
 // ==========================================
 
 app.get('/api/admin/users', (req, res) => {

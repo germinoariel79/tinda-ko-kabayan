@@ -1,3 +1,11 @@
+// ==========================================
+// SECURITY GUARD: Harangin ang direktang pagpasok
+// ==========================================
+const currentUserSession = JSON.parse(localStorage.getItem("tkk_user") || "{}");
+if (!currentUserSession.phone) {
+    window.location.href = "homepage.html";
+}
+
 let regAnswer = 0;
 let logAnswer = 0;
 const API_BASE_URL = "https://tinda-ko-kabayan.onrender.com/api";
