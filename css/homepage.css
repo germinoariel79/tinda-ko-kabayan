@@ -1,6 +1,7 @@
 /* Tinda Ko Kabayan - Homepage Specific Styles */
 body {
     background-color: #F8F9FA !important;
+    overflow-x: hidden;
 }
 
 .hero-section {
@@ -31,7 +32,7 @@ body {
     box-shadow: none;
 }
 
-/* Dagdag para sa Sharjah Area Datalist Input */
+/* Dagdag para sa Datalist & Mobile Inputs */
 input[list]::-webkit-calendar-picker-indicator {
     display: block !important;
     opacity: 0.6;
@@ -66,4 +67,16 @@ footer a {
 
 footer a:hover {
     color: var(--ph-yellow) !important;
+}
+
+/* Mobile Responsive Fixes */
+@media (max-width: 768px) {
+    .hero-section {
+        padding-top: 2rem !important;
+        padding-bottom: 2rem !important;
+    }
+    
+    .display-5 {
+        font-size: 1.75rem !important;
+    }
 }

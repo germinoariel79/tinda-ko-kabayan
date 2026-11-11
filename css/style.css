@@ -31,7 +31,7 @@ body {
 
 /* Flexible Main Content Adjustment */
 body.has-fixed-header main {
-    padding-bottom: 70px; /* Ang 70px allowance na gusto mo sa ibaba */
+    padding-bottom: 70px;
 }
 
 .bg-ph-blue {

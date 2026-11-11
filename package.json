@@ -1,6 +1,16 @@
 {
+  "name": "tinda-ko-kabayan",
+  "version": "1.0.0",
+  "description": "Tinda Ko Kabayan UAE Web Application",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
   "dependencies": {
     "cors": "^2.8.6",
     "express": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }

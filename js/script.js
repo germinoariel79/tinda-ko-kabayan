@@ -1,3 +1,5 @@
+let regAnswer = 0;
+let logAnswer = 0;
 const API_BASE_URL = "https://tinda-ko-kabayan.onrender.com/api";
 
 let cart = [];
@@ -9,10 +11,18 @@ function getFoodItems() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+    window.scrollTo(0, 0);
     renderFoodGrid(getFoodItems());
     updateCartUI();
     checkUserOrderStatus();
     setInterval(checkUserOrderStatus, 4000);
+
+    const phoneInput = document.getElementById("bookPhone");
+    if (phoneInput) {
+        phoneInput.addEventListener("input", (e) => {
+            e.target.value = e.target.value.replace(/\D/g, '').slice(0, 9);
+        });
+    }
 });
 
 function checkUserOrderStatus() {
@@ -32,7 +42,8 @@ function checkUserOrderStatus() {
     }
     
     trackerCard.classList.remove("d-none");
-    document.getElementById("trackRefCode").innerText = "Ref: " + (myOrder.ref || "TKK-2026");
+    const refCodeEl = document.getElementById("trackRefCode");
+    if(refCodeEl) refCodeEl.innerText = "Ref: " + (myOrder.ref || "TKK-2026");
     
     const badge = document.getElementById("trackStatusBadge");
     const pBar = document.getElementById("trackProgressBar");
@@ -56,19 +67,19 @@ function checkUserOrderStatus() {
     const actionArea = document.getElementById("trackerActionArea");
 
     if(status === "Pending Delivery" || status === "Pending") {
-        badge.className = "badge bg-warning text-dark px-2 py-1 rounded-pill"; badge.innerText = "🟡 Pending";
+        if(badge) { badge.className = "badge bg-warning text-dark px-2 py-1 rounded-pill"; badge.innerText = "🟡 Pending"; }
         if(pBar) { pBar.style.width = "25%"; pBar.className = "progress-bar bg-warning progress-bar-striped progress-bar-animated"; }
         if(sPending) sPending.className = "text-warning fw-bold"; if(actionArea) actionArea.innerHTML = "";
     } else if(status === "In Cooking") {
-        badge.className = "badge text-white px-2 py-1 rounded-pill shadow-sm"; badge.style.backgroundColor = "#fd7e14"; badge.innerText = "🟠 Cooking";
+        if(badge) { badge.className = "badge text-white px-2 py-1 rounded-pill shadow-sm"; badge.style.backgroundColor = "#fd7e14"; badge.innerText = "🟠 Cooking"; }
         if(pBar) { pBar.style.width = "50%"; pBar.className = "progress-bar bg-warning progress-bar-striped progress-bar-animated"; }
         if(sCooking) sCooking.className = "text-warning fw-bold"; if(actionArea) actionArea.innerHTML = "";
     } else if(status === "Out for Delivery") {
-        badge.className = "badge bg-info text-dark px-2 py-1 rounded-pill shadow-sm"; badge.innerText = "🔵 Delivery";
+        if(badge) { badge.className = "badge bg-info text-dark px-2 py-1 rounded-pill shadow-sm"; badge.innerText = "🔵 Delivery"; }
         if(pBar) { pBar.style.width = "75%"; pBar.className = "progress-bar bg-info progress-bar-striped progress-bar-animated"; }
         if(sDelivery) sDelivery.className = "text-info fw-bold"; if(actionArea) actionArea.innerHTML = "";
     } else if(status === "Delivered") {
-        badge.className = "badge bg-success text-white px-2 py-1 rounded-pill shadow-sm"; badge.innerText = "🟢 Delivered";
+        if(badge) { badge.className = "badge bg-success text-white px-2 py-1 rounded-pill shadow-sm"; badge.innerText = "🟢 Delivered"; }
         if(pBar) { pBar.style.width = "100%"; pBar.className = "progress-bar bg-success"; }
         if(sDelivered) sDelivered.className = "text-success fw-bold";
         if(actionArea) {
@@ -173,7 +184,9 @@ function filterCategory(cat, btn) {
 }
 
 function filterItems() {
-    const query = document.getElementById("searchInput").value.toLowerCase();
+    const searchInput = document.getElementById("searchInput");
+    if (!searchInput) return;
+    const query = searchInput.value.toLowerCase();
     const items = getFoodItems();
     renderFoodGrid(items.filter(item => item.name.toLowerCase().includes(query) || (item.description && item.description.toLowerCase().includes(query))));
 }
@@ -289,7 +302,7 @@ function switchTab(tab) {
         document.getElementById("tab-menu")?.classList.add("active");
         document.getElementById("mob-tab-menu")?.classList.add("active");
         document.getElementById("view-menu")?.classList.remove("d-none");
-        renderFoodGrid(getFoodItems()); // Real-time sync ng ulam galing admin
+        renderFoodGrid(getFoodItems());
     } else if(tab === 'book') {
         document.getElementById("tab-book")?.classList.add("active");
         document.getElementById("mob-tab-book")?.classList.add("active");

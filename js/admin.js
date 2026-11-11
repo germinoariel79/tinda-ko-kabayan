@@ -1,6 +1,7 @@
 const API_BASE_URL = "https://tinda-ko-kabayan.onrender.com/api";
 
 document.addEventListener("DOMContentLoaded", () => {
+    window.scrollTo(0, 0);
     loadAdminData();
     setInterval(loadAdminData, 5000);
 });
@@ -57,6 +58,7 @@ function switchAdminTab(tabName, element) {
         element.classList.add("active", "fw-bold");
         element.classList.remove("text-white-50");
     }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 async function loadUsersTable() {
@@ -336,8 +338,49 @@ function handleAddNewProduct(e) {
 }
 
 function filterAdminTables() {
-    const filter = document.getElementById("adminSearchInput").value.toLowerCase();
+    const searchInput = document.getElementById("adminSearchInput");
+    if (!searchInput) return;
+    const filter = searchInput.value.toLowerCase();
     document.querySelectorAll(".searchable-row").forEach(row => {
         row.style.display = row.innerText.toLowerCase().includes(filter) ? "" : "none";
     });
+}
+
+function clearOrdersData() {
+    new bootstrap.Modal(document.getElementById('clearOrdersModal')).show();
+}
+
+function executeClearOrders() {
+    localStorage.removeItem("tkk_orders");
+    bootstrap.Modal.getInstance(document.getElementById('clearOrdersModal')).hide();
+    loadOrdersTables();
+}
+
+function clearHistoryData() {
+    new bootstrap.Modal(document.getElementById('clearHistoryModal')).show();
+}
+
+function executeClearHistory() {
+    localStorage.removeItem("tkk_order_history");
+    bootstrap.Modal.getInstance(document.getElementById('clearHistoryModal')).hide();
+    loadOrderHistoryTable();
+    loadOrdersTables();
+}
+
+function clearUsersData() {
+    new bootstrap.Modal(document.getElementById('clearUsersModal')).show();
+}
+
+function executeClearUsers() {
+    localStorage.removeItem("tkk_all_users");
+    bootstrap.Modal.getInstance(document.getElementById('clearUsersModal')).hide();
+    loadUsersTable();
+}
+
+function openLogoutModal() {
+    new bootstrap.Modal(document.getElementById('logoutConfirmModal')).show();
+}
+
+async function confirmLogoutAdmin() {
+    window.location.href = "homepage.html";
 }

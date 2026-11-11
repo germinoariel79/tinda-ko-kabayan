@@ -10,21 +10,21 @@ app.use(cors());
 app.use(express.json());
 
 // ----------------------------------------------------
-// 1. ROOT ROUTE: Unang isalubong ang homepage.html
+// 1. STATIC FILES: I-serve ang buong root folder para sa HTML, CSS, JS, at Images
 // ----------------------------------------------------
+app.use(express.static(__dirname));
+
+// ROOT ROUTE: Unang isalubong ang homepage.html
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'homepage.html'));
 });
 
-// 2. STATIC FILES: I-serve ang buong folder para sa HTML, CSS, JS, at Images
-app.use(express.static(__dirname));
-
-// IN-MEMORY DATABASE (Lagalayan ng mga rehistradong kabayan at mga order)
+// IN-MEMORY DATABASE (Taguan ng mga rehistradong kabayan at mga pumasok na order)
 let usersDB = [];    
 let ordersDB = [];   
 
 // ==========================================
-// 3. AUTHENTICATION ENDPOINTS (LOGIN / REGISTER / LOGOUT)
+// 2. AUTHENTICATION ENDPOINTS (LOGIN / REGISTER / LOGOUT)
 // ==========================================
 
 app.post('/api/register', (req, res) => {
@@ -99,7 +99,7 @@ app.post('/api/logout', (req, res) => {
 });
 
 // ==========================================
-// 4. ADMIN & ORDERS ENDPOINTS
+// 3. ADMIN & ORDERS ENDPOINTS
 // ==========================================
 
 app.get('/api/admin/users', (req, res) => {
