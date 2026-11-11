@@ -1,3 +1,5 @@
+const API_BASE_URL = "https://tinda-ko-kabayan.onrender.com/api";
+
 // Kunin ang mga ulam mula sa Admin panel localStorage
 const foodItems = JSON.parse(localStorage.getItem("tkk_custom_products")) || [];
 
@@ -491,7 +493,7 @@ async function confirmLogout() {
     
     if (savedUser.phone) {
         try {
-            await fetch("http://localhost:3000/api/logout", {
+            await fetch(`${API_BASE_URL}/logout`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ phone: savedUser.phone })
