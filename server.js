@@ -2,11 +2,14 @@ const express = require('express');
 const cors = require('cors');
 
 const app = express();
-const PORT = 3000;
+// Gamitin ang Port na ibibigay ng Render, o 3000 kung nasa local computer ka pa
+const PORT = process.env.PORT || 3000;
 
 // Middlewares
 app.use(cors());
 app.use(express.json());
+
+// ... (ang iba pang code mo sa ibaba ay mananatili nang ganyan)
 
 // IN-MEMORY DATABASE (Pwedeng i-connect sa MongoDB / PostgreSQL sa hinaharap)
 let usersDB = [];    // Lalagyan ng mga rehistradong kabayan
