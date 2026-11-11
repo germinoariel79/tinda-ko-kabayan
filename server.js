@@ -27,7 +27,6 @@ let ordersDB = [];
 // 3. AUTHENTICATION ENDPOINTS (LOGIN / REGISTER / LOGOUT)
 // ==========================================
 
-// API: Registration Endpoint
 app.post('/api/register', (req, res) => {
     const { name, phone, emirate } = req.body;
 
@@ -35,17 +34,14 @@ app.post('/api/register', (req, res) => {
         return res.status(400).json({ success: false, message: "Kailangan ang buong pangalan, phone, at emirate!" });
     }
 
-    // Linisin ang phone number (tanggalin ang spaces)
     const cleanPhone = phone.replace(/\s/g, '');
-
-    // Suriin kung may kaparehong number na sa Database
     const existingUser = usersDB.find(u => u.phone === cleanPhone);
+
     if (existingUser) {
         existingUser.isActive = true;
         return res.status(400).json({ success: false, message: "May account na ang WhatsApp number na ito! Mag-login na lamang." });
     }
 
-    // Gawa ng bagong User Profile
     const newUser = {
         id: usersDB.length + 1,
         name: name.trim(),
@@ -56,8 +52,6 @@ app.post('/api/register', (req, res) => {
     };
 
     usersDB.push(newUser);
-    console.log("--> Bagong Customer na Rehistrado (Online):", newUser);
-
     return res.json({
         success: true,
         message: "Matagumpay ang iyong pag-register!",
@@ -65,7 +59,6 @@ app.post('/api/register', (req, res) => {
     });
 });
 
-// API: Login Endpoint (Para sa may account na)
 app.post('/api/login', (req, res) => {
     const { phone } = req.body;
 
@@ -84,8 +77,6 @@ app.post('/api/login', (req, res) => {
     }
 
     foundUser.isActive = true;
-    console.log("--> Matagumpay na Mag-login (Online) si:", foundUser.name);
-
     return res.json({
         success: true,
         message: "Welcome back, Kabayan!",
@@ -93,7 +84,6 @@ app.post('/api/login', (req, res) => {
     });
 });
 
-// API: Logout Endpoint (Para maging Inactive sa Admin)
 app.post('/api/logout', (req, res) => {
     const { phone } = req.body;
 
@@ -102,7 +92,6 @@ app.post('/api/logout', (req, res) => {
         const foundUser = usersDB.find(u => u.phone === cleanPhone);
         if (foundUser) {
             foundUser.isActive = false; 
-            console.log("--> Mag-logout (Offline) si:", foundUser.name);
         }
     }
 
@@ -110,20 +99,17 @@ app.post('/api/logout', (req, res) => {
 });
 
 // ==========================================
-// 4. ADMIN & ORDERS ENDPOINTS (PARA SA OWNER)
+// 4. ADMIN & ORDERS ENDPOINTS
 // ==========================================
 
-// API: Kunin ang lahat ng Rehistradong Users para sa Admin
 app.get('/api/admin/users', (req, res) => {
     res.json({ success: true, count: usersDB.length, users: usersDB });
 });
 
-// API: Kunin ang lahat ng Orders para sa Admin
 app.get('/api/admin/orders', (req, res) => {
     res.json({ success: true, count: ordersDB.length, orders: ordersDB });
 });
 
-// API: Magpasok ng Bagong Order galing sa Storefront
 app.post('/api/orders', (req, res) => {
     const { customerName, phone, emirate, itemsSummary, total } = req.body;
 
@@ -139,12 +125,9 @@ app.post('/api/orders', (req, res) => {
     };
 
     ordersDB.push(newOrder);
-    console.log("--> Pumasok na Bagong Order:", newOrder);
-
     res.json({ success: true, message: "Pumasok na ang order sa Admin!", order: newOrder });
 });
 
-// API: Palitan ang Delivery Status ng Order (Admin Action)
 app.put('/api/admin/orders/:id', (req, res) => {
     const orderId = parseInt(req.params.id);
     const { status } = req.body;
@@ -152,17 +135,12 @@ app.put('/api/admin/orders/:id', (req, res) => {
     const order = ordersDB.find(o => o.id === orderId);
     if (order) {
         order.status = status;
-        console.log(`--> Updated Order #${orderId} Status: ${status}`);
         return res.json({ success: true, message: "Na-update ang Order Status!", order });
     }
 
     res.status(404).json({ success: false, message: "Hindi nahanap ang order." });
 });
 
-// Simulan ang Node.js Server
 app.listen(PORT, () => {
-    console.log(`=================================`);
-    console.log(`🚀 Tinda Ko Kabayan Backend Server is Running!`);
-    console.log(`📡 Port: ${PORT}`);
-    console.log(`=================================`);
+    console.log(`🚀 Tinda Ko Kabayan Backend Server is Running on port ${PORT}`);
 });
