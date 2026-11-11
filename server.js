@@ -12,10 +12,11 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // ----------------------------------------------------
-// SUPABASE CONFIGURATION
+// SUPABASE CONFIGURATION (Puro at valid URL)
 // ----------------------------------------------------
-const SUPABASE_URL = process.env.SUPABASE_URL || "ILAGAY_MO_DITO_ANG_SUPABASE_URL";
-const SUPABASE_KEY = process.env.SUPABASE_KEY || "ILAGAY_MO_DITO_ANG_SUPABASE_ANON_KEY";
+// SUPABASE CONFIGURATION (Ligtas gamit ang Environment Variables)
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_KEY;
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ROOT ROUTE: Piliting isalubong ang homepage.html
